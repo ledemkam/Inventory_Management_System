@@ -1,0 +1,55 @@
+name: Webapp build
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 22.x ]
+
+    steps:
+      # Vérification du dépôt
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Configuration de Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Installation des dépendances avec npm clean-install
+      - name: Install dependencies
+        run: npm clean-install
+
+      # Audit de sécurité
+      - name: Audit
+        run: npm audit --audit-level=moderate --audit-level=high
+
+      # Vérification de la signature des audits
+      - name: Audit Signature
+        run: npm audit signatures --audit-level=high
+
+      # Linter
+      - name: Lint
+        run: npm run lint
+
+          # Set environment variables
+        #- name: Create environment file
+        # run: |
+        #  mkdir src/environments
+        #echo "Creating production environment file..."
+        #  echo "${{ secrets.ENVIRONMENT_PRODUCTION_FILE }}" >> src/environments/environment.ts
+
+      # Tests
+      - name: Test
+        run: npm run test
+
+      # Build
+      - name: Build
+        run: npm run build
