@@ -1,17 +1,31 @@
-name: Webapp build
+name: CI Frontend
 
 on:
+  push:
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/ci-frontend.yml'
   pull_request:
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/ci-frontend.yml'
   workflow_dispatch:
 
 
+permissions:
+  contents: read
+
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-frontend-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
 
     strategy:
       matrix:
@@ -27,18 +41,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
       # Installation des dépendances avec npm clean-install
       - name: Install dependencies
-        run: npm clean-install
+        run: npm ci
 
       # Audit de sécurité
       - name: Audit
-        run: npm audit --audit-level=moderate --audit-level=high
+        run: npm audit --audit-level=high
 
       # Vérification de la signature des audits
       - name: Audit Signature
-        run: npm audit signatures --audit-level=high
+        run: npm audit signatures
 
       # Linter
       - name: Lint
@@ -53,7 +69,7 @@ jobs:
 
       # Tests
       - name: Test
-        run: npm run test
+        run: npm run test:ci
 
       # Build
       - name: Build
