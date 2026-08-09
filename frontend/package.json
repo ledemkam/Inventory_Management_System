@@ -7,8 +7,22 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test:ci": "ng test --watch=false",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch --onlyChanged --verbose",
+    "test:ci": "jest --ci",
     "lint": "prettier --check \"src/**/*.{ts,html,css,scss}\""
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
   },
   "private": true,
   "packageManager": "npm@11.13.0",
@@ -26,9 +40,24 @@
     "@angular/build": "^22.1.3",
     "@angular/cli": "^22.1.3",
     "@angular/compiler-cli": "^22.1.0",
+    "@eslint/js": "^10.0.1",
+    "@types/jest": "^30.0.0",
+    "angular-eslint": "22.1.0",
+    "eslint": "^10.6.0",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "jest-preset-angular": "^17.0.0",
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
+    "ts-node": "^10.9.2",
     "typescript": "~6.0.2",
-    "vitest": "^4.0.8"
+    "typescript-eslint": "8.62.1"
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.6.0": true,
+    "esbuild@0.28.1": true,
+    "lmdb@3.5.6": true,
+    "msgpackr-extract@3.0.4": true,
+    "unrs-resolver@1.12.2": true
   }
 }
