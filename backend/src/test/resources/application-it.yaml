@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: backend_it
+
+
+  # Keep schema ownership in Flyway migrations for integration tests.
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  flyway:
+    enabled: true
+
+logging:
+  level:
+    root: WARN
+    org.springframework.test: INFO
+    org.flywaydb: INFO
+

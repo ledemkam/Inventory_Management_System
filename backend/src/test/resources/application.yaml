@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: backend_test
+
+
+  main:
+    allow-bean-definition-overriding: true
+
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+
+
+    properties:
+      hibernate:
+        format_sql: true
+
+
+
+  # Fast tests on H2; Flyway is exercised in PostgreSQL integration tests.
+  flyway:
+    enabled: false
+
+
+logging:
+  level:
+    root: WARN
+    de0.backend.backend_test: DEBUG
+    org.springframework: WARN
+    org.springframework.test: DEBUG
+    org.springframework.data: WARN
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.mockito: INFO
+  pattern:
+    console: "[%thread] %-5level %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    access:
+      default: none
+
