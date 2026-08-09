@@ -1,17 +1,30 @@
-name: CI
+name: CI Backend
 
 on:
   push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/ci-backend.yml'
   pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/ci-backend.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-backend-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: backend
 
     steps:
       - name: Checkout code
@@ -34,9 +47,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports
+          name: backend-test-reports
           path: |
-            target/surefire-reports
-            target/failsafe-reports
+            backend/target/surefire-reports
+            backend/target/failsafe-reports
           if-no-files-found: warn
-
