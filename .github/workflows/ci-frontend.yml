@@ -59,12 +59,7 @@ jobs:
       - name: Lint
         run: npm run lint
 
-        # Set environment variables
-        #- name: Create environment file
-        # run: |
-        #  mkdir src/environments
-        #echo "Creating production environment file..."
-        #  echo "${{ secrets.ENVIRONMENT_PRODUCTION_FILE }}" >> src/environments/environment.ts
+
 
       # Tests
       - name: Test
