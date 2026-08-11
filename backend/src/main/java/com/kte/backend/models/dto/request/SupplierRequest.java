@@ -2,17 +2,17 @@ package com.kte.backend.models.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class SupplierRequest {
+@Builder
+public record SupplierRequest(
 
-    @NotBlank(message = "Name is required")
-    private String name;
+        @NotBlank(message = "Name is required")
+        String name,
 
-    private String address;
-
+        @NotBlank(message = "Address is required")
+        String address
+) {
 }

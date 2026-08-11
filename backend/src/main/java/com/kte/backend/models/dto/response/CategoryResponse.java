@@ -1,26 +1,21 @@
 package com.kte.backend.models.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CategoryResponse {
+public record CategoryResponse(
 
-    private String id;
+        String id,
 
-    private String name;
+        String name,
 
-    private LocalDateTime createdAt;
+        LocalDateTime createdAt,
 
-    private LocalDateTime updatedAt;
+        LocalDateTime updatedAt
 
+) {
 }

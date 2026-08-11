@@ -3,22 +3,22 @@ package com.kte.backend.models.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class TransactionRequest {
+@Builder
+public record TransactionRequest(
 
-    @NotBlank(message = "Product id is required")
-    private String productId;
+        @NotBlank(message = "Product id is required")
+        String productId,
 
-    @Positive(message = "Quantity must be positive")
-    private Integer quantity;
+        @Positive(message = "Quantity must be positive")
+        Integer quantity,
 
-    private String supplierId;
+        String supplierId,
 
-    private String description;
+        String description
+) {
 
 }
