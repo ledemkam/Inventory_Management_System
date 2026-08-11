@@ -5,38 +5,37 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ProductRequest {
+@Builder
+public record ProductRequest(
 
-    @NotBlank(message = "Name is required")
-    private String name;
+        @NotBlank(message = "Name is required")
+        String name,
 
-    @NotBlank(message = "Sku is required")
-    private String sku;
+        @NotBlank(message = "Sku is required")
+        String sku,
 
-    @NotNull(message = "Price is required")
-    @Positive(message = "Price must be positive")
-    private BigDecimal price;
+        @NotNull(message = "Price is required")
+        @Positive(message = "Price must be positive")
+        BigDecimal price,
 
-    @NotNull(message = "Stock quantity is required")
-    @PositiveOrZero(message = "Stock quantity must be zero or positive")
-    private Integer stockQuantity;
+        @NotNull(message = "Stock quantity is required")
+        @PositiveOrZero(message = "Stock quantity must be zero or positive")
+        Integer stockQuantity,
 
-    private String description;
+        String description,
 
-    private String imageUrl;
+        String imageUrl,
 
-    private LocalDateTime expiryDate;
+        LocalDateTime expiryDate,
 
-    @NotBlank(message = "Category id is required")
-    private String categoryId;
-
+        @NotBlank(message = "Category id is required")
+        String categoryId
+) {
 }

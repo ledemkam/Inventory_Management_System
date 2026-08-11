@@ -1,41 +1,36 @@
 package com.kte.backend.models.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductResponse {
+public record ProductResponse(
 
-    private String id;
+        String id,
 
-    private String name;
+        String name,
 
-    private String sku;
+        String sku,
 
-    private BigDecimal price;
+        BigDecimal price,
 
-    private Integer stockQuantity;
+        Integer stockQuantity,
 
-    private String description;
+        String description,
 
-    private String imageUrl;
+        String imageUrl,
 
-    private LocalDateTime expiryDate;
+        LocalDateTime expiryDate,
 
-    private CategoryResponse category;
+        CategoryResponse category,
 
-    private LocalDateTime createdAt;
+        LocalDateTime createdAt,
 
-    private LocalDateTime updatedAt;
+        LocalDateTime updatedAt
 
+) {
 }

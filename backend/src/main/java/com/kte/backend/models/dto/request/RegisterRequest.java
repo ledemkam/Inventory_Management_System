@@ -3,22 +3,21 @@ package com.kte.backend.models.dto.request;
 import com.kte.backend.models.enums.UserRole;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class RegisterRequest {
+@Builder
+public record RegisterRequest(
 
-    @NotBlank(message = "Name is required")
-    private String name;
-    @NotBlank(message = "Email is required")
-    private String email;
-    @NotBlank(message = "Password is required")
-    private String password;
-    @NotBlank(message = "PhoneNumber is required")
-    private String phoneNumber;
-    private UserRole role;
+        @NotBlank(message = "Name is required")
+        String name,
+        @NotBlank(message = "Email is required")
+        String email,
+        @NotBlank(message = "Password is required")
+        String password,
+        @NotBlank(message = "PhoneNumber is required")
+        String phoneNumber,
+        UserRole role) {
 
 }

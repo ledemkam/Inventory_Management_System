@@ -3,41 +3,36 @@ package com.kte.backend.models.dto.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kte.backend.models.enums.TransactionStatus;
 import com.kte.backend.models.enums.TransactionType;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TransactionResponse {
+public record TransactionResponse(
 
-    private String id;
+        String id,
 
-    private Integer totalProducts;
+        Integer totalProducts,
 
-    private BigDecimal totalPrice;
+        BigDecimal totalPrice,
 
-    private TransactionType transactionType;
+        TransactionType transactionType,
 
-    private TransactionStatus status;
+        TransactionStatus status,
 
-    private String description;
+        String description,
 
-    private UserResponse user;
+        UserResponse user,
 
-    private ProductResponse product;
+        ProductResponse product,
 
-    private SupplierResponse supplier;
+        SupplierResponse supplier,
 
-    private LocalDateTime createdAt;
+        LocalDateTime createdAt,
 
-    private LocalDateTime updatedAt;
+        LocalDateTime updatedAt
 
+) {
 }
