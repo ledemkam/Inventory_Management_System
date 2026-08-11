@@ -1,5 +1,6 @@
 package com.kte.backend.mapper;
 
+import com.kte.backend.common.PageResponse;
 import com.kte.backend.models.dto.request.CategoryRequest;
 import com.kte.backend.models.dto.response.CategoryResponse;
 import com.kte.backend.models.entity.Category;
