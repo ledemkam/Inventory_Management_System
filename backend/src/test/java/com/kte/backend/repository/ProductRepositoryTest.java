@@ -138,7 +138,27 @@ class ProductRepositoryTest {
 
 
     @Test
+    @DisplayName("Delete product by id")
     void delete_product_By_Id() {
+        //Given
+        Product product = Product.builder()
+                .name("phone")
+                .sku("TESTSKU-PHONE")
+                .price(new BigDecimal("10.0"))
+                .stockQuantity(100)
+                .category(categoryRepository.findByNameIgnoreCase("Electronic").orElse(null)) // Assuming category is not required for this test
+                .imageUrl(null) // Assuming imageUrl is not required for this test
+                .description("phone Description")
+                .build();
+
+        Product savedProduct = productRepository.save(product);
+
+        //When
+        productRepository.deleteById(savedProduct.getId());
+        Optional<Product> deletedProduct = productRepository.findById(savedProduct.getId());
+
+        //Then
+        assertThat(deletedProduct).isNotPresent();
     }
 
 }
