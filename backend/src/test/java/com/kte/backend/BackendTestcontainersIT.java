@@ -15,13 +15,13 @@ import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest
 @Testcontainers
-@ActiveProfiles("test-container")
+@ActiveProfiles("it")
 @SuppressWarnings({"resource", "deprecation"})
-class BackendTestcontainersConfig {
+class BackendTestcontainersIT {
 
     @Container
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine")
-            .withDatabaseName("gartenmanagement")
+            .withDatabaseName("inventory")
             .withUsername("postgres")
             .withPassword("postgres");
 
