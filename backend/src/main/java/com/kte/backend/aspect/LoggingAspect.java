@@ -37,10 +37,18 @@ public class LoggingAspect {
     public void repositoryLayer() {
     }
 
+    @Pointcut("execution(* com.kte.backend.security..*(..))")
+    public void securityLayer() {
+    }
+
+    @Pointcut("execution(* com.kte.backend.mapper..*(..))")
+    public void mapperLayer() {
+    }
+
     /**
      * Combine toutes les couches applicatives en une seule expression réutilisable.
      */
-    @Pointcut("controllerLayer() || serviceLayer() || repositoryLayer()")
+    @Pointcut("controllerLayer() || serviceLayer() || repositoryLayer() || securityLayer() || mapperLayer()")
     public void appLayers() {
     }
 
@@ -79,6 +87,12 @@ public class LoggingAspect {
         }
         if (declaringType.startsWith("com.kte.backend.repository")) {
             return "REPOSITORY";
+        }
+        if (declaringType.startsWith("com.kte.backend.security")) {
+            return "SECURITY";
+        }
+        if (declaringType.startsWith("com.kte.backend.mapper")) {
+            return "MAPPER";
         }
         return "APP";
     }
