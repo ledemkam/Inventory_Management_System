@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 /**
  * Aspect transversal qui journalise l'entrée, la sortie et les exceptions
- * des méthodes de plusieurs packages applicatifs (controllers, service, repository).
+ * des méthodes de plusieurs packages applicatifs (controllers, service, repository, mapper, security).
  * <p>
  * Chaque couche est définie par une expression {@link Pointcut} dédiée,
  * puis combinée dans {@link #appLayers()} afin de centraliser la gestion
