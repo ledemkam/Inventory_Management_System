@@ -32,7 +32,7 @@ class UserRepositoryTest {
         //Given
         User user = userRepository.save(
                 User.builder()
-                        .name("Jane Doe")
+                        .username("Jane Doe")
                         .email("jane.doe@example.com")
                         .password("encoded-password")
                         .role(UserRole.ADMIN)
@@ -62,13 +62,13 @@ class UserRepositoryTest {
     void find_All_users() {
         //Given
         User user1 = User.builder()
-                .name("Jane Doe")
+                .username("Jane Doe")
                 .email("jane.doe@example.com")
                 .password("encoded-password")
                 .role(UserRole.ADMIN)
                 .build();
         User user2 = User.builder()
-                .name("John Smith")
+                .username("John Smith")
                 .email("john.smith@example.com")
                 .password("encoded-password")
                 .role(UserRole.MANAGER)
@@ -88,7 +88,7 @@ class UserRepositoryTest {
     void save_user() {
         //Given
         User user = User.builder()
-                .name("Jane Doe")
+                .username("Jane Doe")
                 .email("jane.doe@example.com")
                 .password("encoded-password")
                 .role(UserRole.ADMIN)
@@ -107,7 +107,7 @@ class UserRepositoryTest {
     void delete_user_by_id() {
         //Given
         User user = User.builder()
-                .name("Jane Doe")
+                .username("Jane Doe")
                 .email("jane.doe@example.com")
                 .password("encoded-password")
                 .role(UserRole.ADMIN)

@@ -41,7 +41,7 @@ class TransactionMapperTest {
 
         User user = User.builder()
                 .id("1L")
-                .name("John Doe")
+                .username("John Doe")
                 .build();
 
         Transaction transaction = Transaction.builder()

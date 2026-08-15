@@ -12,7 +12,7 @@ public record UserResponse(
 
         String id,
 
-        String name,
+        String username,
 
         String email,
 

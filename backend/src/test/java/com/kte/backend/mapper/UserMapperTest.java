@@ -26,7 +26,7 @@ class UserMapperTest {
         //Given
         User user = User.builder()
                 .id("1L")
-                .name("John Doe")
+                .username("John Doe")
                 .email("john.doe@example.com")
                 .password("secret")
                 .phoneNumber("0600000000")
@@ -38,7 +38,7 @@ class UserMapperTest {
 
         //Then
         assertNotNull(dto);
-        assertEquals("John Doe", dto.name());
+        assertEquals("John Doe", dto.username());
         assertEquals("john.doe@example.com", dto.email());
         assertEquals("0600000000", dto.phoneNumber());
         assertEquals(UserRole.ADMIN, dto.role());
@@ -49,7 +49,7 @@ class UserMapperTest {
     void dto_To_Entity() {
         //Given
         RegisterRequest registerRequest = RegisterRequest.builder()
-                .name("John Doe")
+                .username("John Doe")
                 .email("john.doe@example.com")
                 .password("secret")
                 .phoneNumber("0600000000")
@@ -69,13 +69,13 @@ class UserMapperTest {
     void to_Dto_List() {
         //Given
         User user1 = User.builder()
-                .name("John Doe")
+                .username("John Doe")
                 .email("john.doe@example.com")
                 .role(UserRole.ADMIN)
                 .build();
 
         User user2 = User.builder()
-                .name("Jane Smith")
+                .username("Jane Smith")
                 .email("jane.smith@example.com")
                 .role(UserRole.MANAGER)
                 .build();
@@ -94,13 +94,13 @@ class UserMapperTest {
         //Given
         User user = User.builder()
                 .id("1L")
-                .name("John Doe")
+                .username("John Doe")
                 .email("john.doe@example.com")
                 .role(UserRole.ADMIN)
                 .build();
 
         RegisterRequest registerRequest = RegisterRequest.builder()
-                .name("John Updated")
+                .username("John Updated")
                 .email("john.updated@example.com")
                 .password("newSecret")
                 .phoneNumber("0611111111")
@@ -111,7 +111,7 @@ class UserMapperTest {
         userMapper.updateEntityFromDto(registerRequest, user);
 
         //Then
-        assertEquals("John Updated", user.getName());
+        assertEquals("John Updated", user.getUsername());
         assertEquals("john.updated@example.com", user.getEmail());
         assertEquals("newSecret", user.getPassword());
         assertEquals("0611111111", user.getPhoneNumber());
