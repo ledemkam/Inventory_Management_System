@@ -3,6 +3,7 @@ package com.kte.backend.services.authentication.impl;
 import com.kte.backend.exception.EntityAlreadyExistsException;
 import com.kte.backend.mapper.UserMapper;
 import com.kte.backend.models.dto.request.RegisterRequest;
+import com.kte.backend.models.dto.request.UserRequest;
 import com.kte.backend.models.dto.response.UserResponse;
 import com.kte.backend.models.entity.User;
 import com.kte.backend.repository.UserRepository;
@@ -28,7 +29,7 @@ public class UserServiceImpl implements UserService {
                     " already exists");
         }
 
-        if (userRepository.findByEmail(registerRequest.email())) {
+        if (userRepository.existsByEmail(registerRequest.email())) {
             throw new EntityAlreadyExistsException("User with email " + registerRequest.email() +
                     " already exists");
         }
@@ -43,5 +44,30 @@ public class UserServiceImpl implements UserService {
 
         log.info("User created successfully");
         return userMapper.entityToDto(savedUser);
+    }
+
+    @Override
+    public UserResponse getAllUsers() {
+        return null;
+    }
+
+    @Override
+    public User getCurrentLoggedInUser() {
+        return null;
+    }
+
+    @Override
+    public UserResponse updateUser(String id, UserRequest userRequest) {
+        return null;
+    }
+
+    @Override
+    public UserResponse deleteUser(String id) {
+        return null;
+    }
+
+    @Override
+    public UserResponse getUserTransactions(String id) {
+        return null;
     }
 }

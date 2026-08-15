@@ -4,8 +4,10 @@ package com.kte.backend.repository;
 import com.kte.backend.models.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, String> {
-    boolean findByEmail(String email);
+import java.util.Optional;
 
-    boolean existsByUsername(String username);
+public interface UserRepository extends JpaRepository<User, String> {
+    boolean existsByUsername(String adminUsername);
+
+    boolean existsByEmail(String email);
 }
