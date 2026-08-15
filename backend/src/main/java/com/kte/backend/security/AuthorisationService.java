@@ -5,6 +5,7 @@ import com.kte.backend.models.entity.User;
 import com.kte.backend.models.enums.UserRole;
 import com.kte.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthorisationService {
     private final UserRepository userRepository;
 
@@ -61,7 +63,11 @@ public class AuthorisationService {
      * @param resourceOwnerId ID of the resource owner
      */
     public boolean canAccessResource(Long currentUserId, Long resourceOwnerId) {
-        return isCurrentUserAdminOrManager() || currentUserId.equals(resourceOwnerId);
+        boolean allowed = isCurrentUserAdminOrManager() || currentUserId.equals(resourceOwnerId);
+        if (!allowed) {
+            log.warn("User {} denied access to resource owned by {}", currentUserId, resourceOwnerId);
+        }
+        return allowed;
     }
 
     /**
@@ -71,11 +77,15 @@ public class AuthorisationService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("Attempt to resolve current user without an authenticated context");
             throw new AccessDeniedException("Authentication required");
         }
 
         String email = authentication.getName();
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found"));
+                .orElseThrow(() -> {
+                    log.error("Authenticated user {} not found in database", email);
+                    return new EntityNotFoundException("Authenticated user not found");
+                });
     }
 }

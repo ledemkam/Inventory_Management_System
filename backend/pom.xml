@@ -40,11 +40,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <!-- AOP (required for @Aspect / @Pointcut / @Around support) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aspectj</artifactId>
-        </dependency>
         <!--data jpa-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
