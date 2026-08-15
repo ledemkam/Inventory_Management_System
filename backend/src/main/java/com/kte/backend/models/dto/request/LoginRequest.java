@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public record LoginRequest(
 
-        @NotBlank(message = "Email is required")
-        String email,
+        @NotBlank(message = "Username is required")
+        String username,
         @NotBlank(message = "Password is required")
         String password
 ) {

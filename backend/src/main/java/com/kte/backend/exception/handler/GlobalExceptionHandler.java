@@ -24,7 +24,6 @@ import java.util.List;
 
 @RestControllerAdvice
 @Slf4j
-
 public class GlobalExceptionHandler {
     @ExceptionHandler({
             AuthenticationException.class,
