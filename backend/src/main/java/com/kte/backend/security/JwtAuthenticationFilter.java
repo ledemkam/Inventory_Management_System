@@ -12,8 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthenticationService authenticationService;
@@ -43,10 +43,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (userDetails instanceof BlogUserDetails blogUserDetails) {
                     request.setAttribute("userId", blogUserDetails.getId());
                 }
+
+                log.debug("Authenticated request to {} as {}", request.getRequestURI(), userDetails.getUsername());
             }
         } catch (Exception e) {
             // Invalid or expired token: allow the request to pass without authentication.
-            log.warn("Could not authenticate request: {}", e.getMessage());
+            log.warn("Rejected JWT on {}: {}", request.getRequestURI(), e.getMessage());
         }
 
         filterChain.doFilter(request, response);
