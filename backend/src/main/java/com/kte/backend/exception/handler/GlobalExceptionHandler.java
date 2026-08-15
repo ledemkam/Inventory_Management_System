@@ -10,6 +10,10 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,6 +26,25 @@ import java.util.List;
 @Slf4j
 
 public class GlobalExceptionHandler {
+    @ExceptionHandler({
+            AuthenticationException.class,
+            BadCredentialsException.class,
+            UsernameNotFoundException.class
+    })
+    public ResponseEntity<Error> handleAuthenticationException(Exception ex) {
+        log.warn("Authentication failed: {}", ex.getMessage()); // log.warn, not log.error
+        Error error = new Error();
+        error.setError("Invalid credentials"); // Generic message for security
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Error> handleAccessDenied(AccessDeniedException ex) {
+        log.warn("Access denied: {}", ex.getMessage());
+        Error error = new Error();
+        error.setError("Access denied");
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
 
 
     @ExceptionHandler(EntityAlreadyExistsException.class)
