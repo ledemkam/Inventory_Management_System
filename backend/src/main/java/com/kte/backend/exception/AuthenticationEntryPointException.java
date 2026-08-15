@@ -1,5 +1,8 @@
 package com.kte.backend.exception;
 
+import org.springframework.stereotype.Component;
+
+
 public class AuthenticationEntryPointException extends RuntimeException {
     public AuthenticationEntryPointException(String message) {
         super(message);

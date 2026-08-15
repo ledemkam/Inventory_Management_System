@@ -1,3 +1,7 @@
+jwt:
+  secret: ${jwt.secret}
+  expiration: ${jwt.expiration}
+
 spring:
   application:
     name: backend
@@ -9,7 +13,6 @@ spring:
       - development
   cache:
     type: simple
-
 
   datasource:
     url: ${DB_URL}
