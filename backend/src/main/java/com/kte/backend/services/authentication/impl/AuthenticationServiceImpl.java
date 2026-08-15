@@ -20,7 +20,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtTokenService jwtTokenService;
 
     @Override
-    public LoginResponse login(LoginRequest request) {
+    public LoginResponse login(final LoginRequest request) {
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.username(),
