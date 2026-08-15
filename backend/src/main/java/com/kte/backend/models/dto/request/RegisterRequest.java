@@ -18,6 +18,6 @@ public record RegisterRequest(
         String password,
         @NotBlank(message = "PhoneNumber is required")
         String phoneNumber,
-        UserRole role) {
-
+        UserRole role
+) {
 }

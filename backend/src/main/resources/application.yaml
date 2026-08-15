@@ -1,4 +1,6 @@
-secreteJwtString: ${secreteJwtString}
+jwt:
+  secret: ${jwt.secret}
+  expiration: ${jwt.expiration}
 
 spring:
   application:
