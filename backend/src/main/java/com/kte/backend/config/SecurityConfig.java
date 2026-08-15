@@ -1,63 +1,80 @@
 package com.kte.backend.config;
 
-import com.kte.backend.security.AuthFilter;
-import com.kte.backend.security.CustomAccessDeniedHandler;
-import com.kte.backend.security.CustomAuthenticationEntryPoint;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
+import com.kte.backend.security.AuthenticationService;
+
+import com.kte.backend.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
+
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
+
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
-@Slf4j
 public class SecurityConfig {
-
-    private final AuthFilter authFilter;
-    private final AuthenticationEntryPoint customAuthenticationEntryPoint;
-    private final AccessDeniedHandler accessDeniedHandler;
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
-                .exceptionHandling(exception ->
-                        exception.accessDeniedHandler(accessDeniedHandler)
-                                .authenticationEntryPoint(customAuthenticationEntryPoint)
-                )
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
-        return httpSecurity.build();
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
+        try {
+            return config.getAuthenticationManager();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to create AuthenticationManager", e);
+        }
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(
+            AuthenticationService authenticationService) {
+        return new JwtAuthenticationFilter(authenticationService);
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   JwtAuthenticationFilter jwtAuthenticationFilter) {
+        try {
+            http
+                    .authorizeHttpRequests(auth -> auth
+                            .requestMatchers(HttpMethod.POST, "/api/v1/auth/login", "/api/v1/auth/register").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
+                            .requestMatchers("/actuator/**").permitAll()
+                            .requestMatchers(
+                                    "/swagger-ui/**",
+                                    "/v3/api-docs/**",
+                                    "/swagger-ui.html",
+                                    "/swagger-resources/**",
+                                    "/webjars/**"
+                            ).permitAll()
+                            .anyRequest().authenticated()
+                    )
+                    .csrf(AbstractHttpConfigurer::disable)
+                    .sessionManagement(session ->
+                            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    )
+                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+            return http.build();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to configure security filter chain", e);
+        }
     }
 }
