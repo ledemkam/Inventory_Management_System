@@ -8,6 +8,8 @@ import lombok.Builder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record AuthResponse(
 
+        String id,
+
         String token,
 
         UserRole role,
