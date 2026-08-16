@@ -18,3 +18,9 @@ Content-Type: application/json
   "username": "testuser",
   "password": "testpassword1"
 }
+
+###
+
+GET http://localhost:8080/api/v1/users
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwYmRlYTJkZC1mOGMzLTRiZmQtYWRkZi03Y2MxZjczYmU3YTUiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODY4OTc3ODAsImV4cCI6MTc4Njk4NDE4MH0.dX7WvCjlTVE1hpKCJR5TtOA-6rI0BPA0UBK1yLDLiY8
