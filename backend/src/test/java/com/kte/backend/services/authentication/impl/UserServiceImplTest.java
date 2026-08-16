@@ -40,6 +40,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -375,5 +376,28 @@ class UserServiceImplTest {
 
         verify(userRepository).findById(userEntity.getId());
         verify(userRepository).delete(userEntity);
+    }
+
+    @Test
+    @DisplayName("Should throw when deleting a no-existing user")
+    void should_Delete_User_when_User_no_Exists() {
+        //Given
+        final User userEntity = User.builder()
+                .id("1")
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .phoneNumber("1234567890")
+                .role(UserRole.MANAGER)
+                .build();
+
+        when(userRepository.findById(userEntity.getId())).thenReturn(Optional.empty());
+
+        // When / Then
+        assertThatThrownBy(() -> userService.deleteUser(userEntity.getId()))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("User not found");
+
+        verify(userRepository).findById(userEntity.getId());
+        verify(userRepository, never()).delete(any(User.class));
     }
 }
