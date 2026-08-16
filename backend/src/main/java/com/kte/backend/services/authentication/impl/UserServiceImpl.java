@@ -2,6 +2,7 @@ package com.kte.backend.services.authentication.impl;
 
 import com.kte.backend.common.PageResponse;
 import com.kte.backend.exception.EntityAlreadyExistsException;
+import com.kte.backend.exception.EntityNotFoundException;
 import com.kte.backend.mapper.UserMapper;
 import com.kte.backend.models.dto.request.RegisterRequest;
 import com.kte.backend.models.dto.request.UserRequest;
@@ -12,6 +13,8 @@ import com.kte.backend.services.authentication.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -58,7 +61,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getCurrentLoggedInUser() {
-        return null;
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new EntityNotFoundException("No authenticated user found");
+        }
+
+        final String userEmail = authentication.getName();
+        return userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email " + userEmail));
     }
 
     @Override
