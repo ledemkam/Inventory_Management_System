@@ -4,6 +4,7 @@ import com.kte.backend.common.PageResponse;
 import com.kte.backend.exception.EntityAlreadyExistsException;
 import com.kte.backend.mapper.UserMapper;
 import com.kte.backend.models.dto.request.RegisterRequest;
+import com.kte.backend.models.dto.request.UserRequest;
 import com.kte.backend.models.dto.response.UserResponse;
 import com.kte.backend.models.entity.User;
 import com.kte.backend.models.enums.UserRole;
@@ -215,8 +216,58 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName("Should update user details")
-    void should_Update_UserDetails() {
+    @DisplayName("Should return updated user")
+    void should_Return_Updated_User() {
+        // Given
+        final String userId = "1";
+        final UserRequest userRequest = UserRequest.builder()
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .password("newPassword")
+                .role(UserRole.MANAGER)
+                .build();
+
+        final User existingUser = User.builder()
+                .id(userId)
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .password("oldEncodedPassword")
+                .phoneNumber("1234567890")
+                .role(UserRole.MANAGER)
+                .build();
+
+        final User savedUser = User.builder()
+                .id(userId)
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .password("newEncodedPassword")
+                .phoneNumber("1234567890")
+                .role(UserRole.MANAGER)
+                .build();
+
+        final UserResponse expectedResponse = UserResponse.builder()
+                .id(userId)
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .phoneNumber("1234567890")
+                .role(UserRole.MANAGER)
+                .build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(passwordEncoder.encode(userRequest.password())).thenReturn("newEncodedPassword");
+        when(userRepository.save(existingUser)).thenReturn(savedUser);
+        when(userMapper.entityToDto(savedUser)).thenReturn(expectedResponse);
+
+        // When
+        final UserResponse actualResponse = userService.updateUser(userId, userRequest);
+
+        // Then
+        assertEquals(expectedResponse, actualResponse);
+        assertEquals("newEncodedPassword", existingUser.getPassword());
+        verify(userRepository).findById(userId);
+        verify(userMapper).updateEntityFromDto(userRequest, existingUser);
+        verify(passwordEncoder).encode(userRequest.password());
+        verify(userRepository).save(existingUser);
     }
 
     @Test
