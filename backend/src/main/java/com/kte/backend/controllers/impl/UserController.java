@@ -2,6 +2,7 @@ package com.kte.backend.controllers.impl;
 
 import com.kte.backend.common.PageResponse;
 import com.kte.backend.controllers.UIUserController;
+import com.kte.backend.mapper.UserMapper;
 import com.kte.backend.models.dto.request.UserRequest;
 import com.kte.backend.models.dto.response.TransactionResponse;
 import com.kte.backend.models.dto.response.UserResponse;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController implements UIUserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @Override
     @GetMapping
@@ -45,10 +47,10 @@ public class UserController implements UIUserController {
 
     @Override
     @GetMapping("/current")
-    public ResponseEntity<User> getCurrentUser() {
+    public ResponseEntity<UserResponse> getCurrentUser() {
         log.debug("Received request to get current user");
         final User currentUser = userService.getCurrentLoggedInUser();
-        return ResponseEntity.ok(currentUser);
+        return ResponseEntity.ok(userMapper.entityToDto(currentUser));
     }
 
     @Override

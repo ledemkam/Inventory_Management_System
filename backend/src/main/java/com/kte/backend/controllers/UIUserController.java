@@ -4,7 +4,6 @@ import com.kte.backend.common.PageResponse;
 import com.kte.backend.models.dto.request.UserRequest;
 import com.kte.backend.models.dto.response.TransactionResponse;
 import com.kte.backend.models.dto.response.UserResponse;
-import com.kte.backend.models.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -58,7 +57,7 @@ public interface UIUserController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = Error.class))),
     })
-    ResponseEntity<User> getCurrentUser();
+    ResponseEntity<UserResponse> getCurrentUser();
 
     @Operation(summary = "Get user and their transactions")
     @ApiResponses(value = {

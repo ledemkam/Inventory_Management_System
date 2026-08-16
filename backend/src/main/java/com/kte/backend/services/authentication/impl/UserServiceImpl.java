@@ -45,11 +45,11 @@ public class UserServiceImpl implements UserService {
             throw new EntityNotFoundException("No authenticated user found");
         }
 
-        final String userEmail = authentication.getName();
+        final String userId = authentication.getName();
 
-        log.debug("Fetching current logged-in user with email: {}", userEmail);
-        return userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with email " + userEmail));
+        log.debug("Fetching current logged-in user with id: {}", userId);
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + userId));
     }
 
     @Override
