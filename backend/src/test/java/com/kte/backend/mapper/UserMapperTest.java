@@ -1,6 +1,7 @@
 package com.kte.backend.mapper;
 
 import com.kte.backend.models.dto.request.RegisterRequest;
+import com.kte.backend.models.dto.request.UserRequest;
 import com.kte.backend.models.dto.response.UserResponse;
 import com.kte.backend.models.entity.User;
 import com.kte.backend.models.enums.UserRole;
@@ -96,25 +97,25 @@ class UserMapperTest {
                 .id("1L")
                 .username("John Doe")
                 .email("john.doe@example.com")
+                .phoneNumber("0600000000")
                 .role(UserRole.ADMIN)
                 .build();
 
-        RegisterRequest registerRequest = RegisterRequest.builder()
+        UserRequest userRequest = UserRequest.builder()
                 .username("John Updated")
                 .email("john.updated@example.com")
                 .password("newSecret")
-                .phoneNumber("0611111111")
                 .role(UserRole.MANAGER)
                 .build();
 
         //When
-        userMapper.updateEntityFromDto(registerRequest, user);
+        userMapper.updateEntityFromDto(userRequest, user);
 
         //Then
         assertEquals("John Updated", user.getUsername());
         assertEquals("john.updated@example.com", user.getEmail());
         assertEquals("newSecret", user.getPassword());
-        assertEquals("0611111111", user.getPhoneNumber());
+        assertEquals("0600000000", user.getPhoneNumber());
         assertEquals(UserRole.MANAGER, user.getRole());
         assertEquals("1L", user.getId());
     }

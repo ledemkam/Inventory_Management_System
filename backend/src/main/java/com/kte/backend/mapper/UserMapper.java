@@ -1,6 +1,7 @@
 package com.kte.backend.mapper;
 
 import com.kte.backend.models.dto.request.RegisterRequest;
+import com.kte.backend.models.dto.request.UserRequest;
 import com.kte.backend.models.dto.response.UserResponse;
 import com.kte.backend.models.entity.User;
 import org.mapstruct.Mapper;
@@ -45,5 +46,5 @@ public interface UserMapper {
      * @param dto    the source DTO
      * @param entity the entity to update
      */
-    void updateEntityFromDto(RegisterRequest dto, @MappingTarget User entity);
+    void updateEntityFromDto(UserRequest dto, @MappingTarget User entity);
 }
