@@ -1,5 +1,6 @@
 package com.kte.backend.services.authentication.impl;
 
+import com.kte.backend.common.PageResponse;
 import com.kte.backend.exception.EntityAlreadyExistsException;
 import com.kte.backend.mapper.UserMapper;
 import com.kte.backend.models.dto.request.RegisterRequest;
@@ -10,6 +11,7 @@ import com.kte.backend.repository.UserRepository;
 import com.kte.backend.services.authentication.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -47,8 +49,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getAllUsers() {
-        return null;
+    public PageResponse<UserResponse> getAllUsers(final Pageable pageable) {
+        log.debug("Fetching users with paging: page={}, size={}",
+                pageable.getPageNumber(),
+                pageable.getPageSize());
+        return PageResponse.of(userRepository.findAll(pageable).map(userMapper::entityToDto));
     }
 
     @Override
