@@ -16,6 +16,7 @@ import com.kte.backend.models.enums.TransactionType;
 import com.kte.backend.models.enums.UserRole;
 import com.kte.backend.repository.TransactionRepository;
 import com.kte.backend.repository.UserRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -353,7 +354,26 @@ class UserServiceImplTest {
 
 
     @Test
-    @DisplayName("Should delete user")
-    void should_Delete_User() {
+    @DisplayName("Should delete user when user exists")
+    void should_Delete_User_when_User_Exists() {
+        //Given
+        final User userEntity = User.builder()
+                .id("1")
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .phoneNumber("1234567890")
+                .role(UserRole.MANAGER)
+                .build();
+
+        when(userRepository.findById(userEntity.getId())).thenReturn(Optional.of(userEntity));
+        doNothing().when(userRepository).delete(userEntity);
+
+        // When
+        userService.deleteUser(userEntity.getId());
+
+        // Then
+
+        verify(userRepository).findById(userEntity.getId());
+        verify(userRepository).delete(userEntity);
     }
 }
