@@ -20,8 +20,10 @@ public interface UIAuthenticationController {
 
     @Operation(summary = "Registration Endpoint", description = "Endpoint for user registration")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "201", description = "Created"),
             @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content(schema = @Schema(implementation = Error.class))),
             @ApiResponse(responseCode = "409", description = "Conflict - User already exists",
                     content = @Content(schema = @Schema(implementation = Error.class))),

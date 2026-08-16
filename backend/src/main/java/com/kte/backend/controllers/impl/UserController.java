@@ -61,4 +61,12 @@ public class UserController implements UIUserController {
         final PageResponse<TransactionResponse> userWithTransactions = userService.getUserTransactions(id, pageable);
         return ResponseEntity.ok(userWithTransactions);
     }
+
+    @Override
+    @DeleteMapping("/{user-id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("user-id") String id) {
+        log.debug("Received request to delete user with user-id: {}", id);
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
 }
