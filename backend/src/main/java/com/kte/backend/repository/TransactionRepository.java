@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
 
+    Page<Transaction> findAllByUser_Id(String userId, Pageable pageable);
 
     @Query("SELECT t FROM Transaction t " +
             "WHERE YEAR(t.createdAt) = :year AND MONTH(t.createdAt) = :month")
