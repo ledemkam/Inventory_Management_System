@@ -1,11 +1,9 @@
 package com.kte.backend.services.authentication.impl;
 
 import com.kte.backend.common.PageResponse;
-import com.kte.backend.exception.EntityAlreadyExistsException;
 import com.kte.backend.exception.EntityNotFoundException;
 import com.kte.backend.mapper.TransactionMapper;
 import com.kte.backend.mapper.UserMapper;
-import com.kte.backend.models.dto.request.RegisterRequest;
 import com.kte.backend.models.dto.request.UserRequest;
 import com.kte.backend.models.dto.response.TransactionResponse;
 import com.kte.backend.models.dto.response.UserResponse;
@@ -31,30 +29,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final TransactionRepository transactionRepository;
     private final TransactionMapper transactionMapper;
-
-    @Override
-    public UserResponse registerUser(final RegisterRequest registerRequest) {
-        if (userRepository.existsByUsername(registerRequest.username())) {
-            throw new EntityAlreadyExistsException("User with username " + registerRequest.username() +
-                    " already exists");
-        }
-
-        if (userRepository.existsByEmail(registerRequest.email())) {
-            throw new EntityAlreadyExistsException("User with email " + registerRequest.email() +
-                    " already exists");
-        }
-
-        if (registerRequest.role() == null) {
-            throw new IllegalArgumentException("Role must be provided");
-        }
-
-        final User user = userMapper.dtoToEntity(registerRequest);
-        user.setPassword(passwordEncoder.encode(registerRequest.password()));
-        final User savedUser = userRepository.save(user);
-
-        log.info("User created successfully");
-        return userMapper.entityToDto(savedUser);
-    }
 
     @Override
     public PageResponse<UserResponse> getAllUsers(final Pageable pageable) {
