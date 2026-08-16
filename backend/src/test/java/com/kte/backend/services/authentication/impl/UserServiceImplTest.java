@@ -142,31 +142,31 @@ class UserServiceImplTest {
     @DisplayName("Should return the current logged-in user")
     void should_Return_TheCurrent_Logged_In_User() {
         // Given
-        final String userEmail = "johndoe@example.com";
+        final String userId = "1";
         final User expectedUser = User.builder()
-                .id("1")
+                .id(userId)
                 .username("johndoe")
-                .email(userEmail)
+                .email("johndoe@example.com")
                 .phoneNumber("1234567890")
                 .role(UserRole.MANAGER)
                 .build();
 
         final Authentication authentication = mock(Authentication.class);
         when(authentication.isAuthenticated()).thenReturn(true);
-        when(authentication.getName()).thenReturn(userEmail);
+        when(authentication.getName()).thenReturn(userId);
 
         final SecurityContext securityContext = mock(SecurityContext.class);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
 
-        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(expectedUser));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(expectedUser));
 
         // When
         final User actualUser = userService.getCurrentLoggedInUser();
 
         // Then
         assertEquals(expectedUser, actualUser);
-        verify(userRepository).findByEmail(userEmail);
+        verify(userRepository).findById(userId);
     }
 
     @Test
@@ -318,7 +318,7 @@ class UserServiceImplTest {
 
     @Test
     @DisplayName("Should throw when deleting a no-existing user")
-    void should_Delete_User_when_User_no_Exists() {
+    void should_Throw_When_Deleting_A_No_Existing_User() {
         //Given
         final User userEntity = User.builder()
                 .id("1")
@@ -328,14 +328,15 @@ class UserServiceImplTest {
                 .role(UserRole.MANAGER)
                 .build();
 
-        when(userRepository.findById(userEntity.getId())).thenReturn(Optional.empty());
+        final String userId = userEntity.getId();
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // When / Then
-        assertThatThrownBy(() -> userService.deleteUser(userEntity.getId()))
+        assertThatThrownBy(() -> userService.deleteUser(userId))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("User not found");
 
-        verify(userRepository).findById(userEntity.getId());
+        verify(userRepository).findById(userId);
         verify(userRepository, never()).delete(any(User.class));
     }
 }
