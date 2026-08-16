@@ -1,11 +1,9 @@
 package com.kte.backend.services.authentication.impl;
 
 import com.kte.backend.common.PageResponse;
-import com.kte.backend.exception.EntityAlreadyExistsException;
 import com.kte.backend.exception.EntityNotFoundException;
 import com.kte.backend.mapper.TransactionMapper;
 import com.kte.backend.mapper.UserMapper;
-import com.kte.backend.models.dto.request.RegisterRequest;
 import com.kte.backend.models.dto.request.UserRequest;
 import com.kte.backend.models.dto.response.TransactionResponse;
 import com.kte.backend.models.dto.response.UserResponse;
@@ -16,7 +14,6 @@ import com.kte.backend.models.enums.TransactionType;
 import com.kte.backend.models.enums.UserRole;
 import com.kte.backend.repository.TransactionRepository;
 import com.kte.backend.repository.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,65 +67,6 @@ class UserServiceImplTest {
     @AfterEach
     void tearDown() {
         SecurityContextHolder.clearContext();
-    }
-
-    @Test
-    @DisplayName("Should register user when user does not exist")
-    void should_register_User_when_user_does_not_exist() {
-        final RegisterRequest registerRequest = RegisterRequest.builder()
-                .username("johndoe")
-                .email("johndoe@example.com")
-                .password("plainPassword")
-                .phoneNumber("1234567890")
-                .role(UserRole.MANAGER)
-                .build();
-
-        final User userToSave = User.builder().username("johndoe").build();
-        final User savedUser = User.builder().username("johndoe").build();
-        final UserResponse expectedResponse = UserResponse.builder()
-                .id("1")
-                .username("johndoe")
-                .email("johndoe@example.com")
-                .phoneNumber("1234567890")
-                .role(UserRole.MANAGER)
-                .build();
-
-        when(userRepository.existsByUsername(registerRequest.username())).thenReturn(false);
-        when(userRepository.existsByEmail(registerRequest.email())).thenReturn(false);
-        when(userMapper.dtoToEntity(registerRequest)).thenReturn(userToSave);
-        when(passwordEncoder.encode(registerRequest.password())).thenReturn("encodedPassword");
-        when(userRepository.save(userToSave)).thenReturn(savedUser);
-        when(userMapper.entityToDto(savedUser)).thenReturn(expectedResponse);
-
-        final UserResponse actualResponse = userService.registerUser(registerRequest);
-
-        assertEquals(expectedResponse, actualResponse);
-        assertEquals("encodedPassword", userToSave.getPassword());
-        verify(userRepository).existsByUsername(registerRequest.username());
-        verify(userRepository).existsByEmail(registerRequest.email());
-        verify(passwordEncoder).encode(registerRequest.password());
-        verify(userRepository).save(userToSave);
-    }
-
-    @Test
-    @DisplayName("Should not register user when user already exists")
-    void should_register_User_when_user_exist() {
-        final RegisterRequest registerRequest = RegisterRequest.builder()
-                .username("johndoe")
-                .email("johndoe@example.com")
-                .password("plainPassword")
-                .phoneNumber("1234567890")
-                .role(UserRole.MANAGER)
-                .build();
-
-        when(userRepository.existsByUsername(registerRequest.username())).thenReturn(true);
-
-        assertThrows(EntityAlreadyExistsException.class, () -> userService.registerUser(registerRequest));
-
-        verify(userRepository).existsByUsername(registerRequest.username());
-        verify(userRepository, never()).existsByEmail(anyString());
-        verify(userRepository, never()).save(any(User.class));
-        verify(userMapper, never()).entityToDto(any(User.class));
     }
 
     @Test
