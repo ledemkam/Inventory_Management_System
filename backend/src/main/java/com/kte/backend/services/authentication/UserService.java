@@ -17,7 +17,7 @@ public interface UserService {
 
     UserResponse updateUser(final String id, final UserRequest userRequest);
 
-    UserResponse deleteUser(final String id);
+    void deleteUser(final String id);
 
     PageResponse<TransactionResponse> getUserTransactions(final String id, final Pageable pageable);
 }
