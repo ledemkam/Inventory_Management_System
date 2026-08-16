@@ -3,7 +3,6 @@ package com.kte.backend.config;
 
 import com.kte.backend.security.JwtAuthenticationFilter;
 import com.kte.backend.security.JwtTokenService;
-import com.kte.backend.services.authentication.AuthenticationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -44,8 +43,8 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(
-            AuthenticationService authenticationService) {
-        return new JwtAuthenticationFilter((JwtTokenService) authenticationService);
+            JwtTokenService jwtTokenService) {
+        return new JwtAuthenticationFilter(jwtTokenService);
     }
 
     @Bean
