@@ -72,8 +72,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse updateUser(String id, UserRequest userRequest) {
-        return null;
+    public UserResponse updateUser(final String id, final UserRequest userRequest) {
+
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+
+        userMapper.updateEntityFromDto(userRequest, existingUser);
+        if (userRequest.password() != null && !userRequest.password().isBlank()) {
+            existingUser.setPassword(passwordEncoder.encode(userRequest.password()));
+        }
+        User updatedUser = userRepository.save(existingUser);
+        return userMapper.entityToDto(updatedUser);
     }
 
     @Override
