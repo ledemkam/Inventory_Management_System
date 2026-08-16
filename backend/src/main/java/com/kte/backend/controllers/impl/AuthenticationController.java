@@ -29,7 +29,16 @@ public class AuthenticationController implements UIAuthenticationController {
             @Valid
             @RequestBody final RegisterRequest registerRequest) {
         final UserResponse userResponse = authenticationService.registerUser(registerRequest);
+        log.info("User registered successfully: {}", userResponse);
         return ResponseEntity.ok(userResponse);
+    }
+
+    @Override
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody final LoginRequest request) {
+        final LoginResponse loginResponse = authenticationService.login(request);
+        log.info("User logged in successfully: {}", loginResponse);
+        return ResponseEntity.ok(loginResponse);
     }
 
 

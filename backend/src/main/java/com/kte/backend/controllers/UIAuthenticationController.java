@@ -31,4 +31,17 @@ public interface UIAuthenticationController {
     ResponseEntity<UserResponse> registerUser(@Valid @RequestBody final RegisterRequest registerRequest);
 
 
+    @Operation(summary = "Login")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid credentials",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+    })
+    ResponseEntity<LoginResponse> login(@Valid @RequestBody final LoginRequest request);
+
+
 }
