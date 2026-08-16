@@ -73,4 +73,18 @@ public interface UIUserController {
                     content = @Content(schema = @Schema(implementation = Error.class))),
     })
     ResponseEntity<PageResponse<TransactionResponse>> getUserAndTransactions(final String id, final Pageable pageable);
+
+    @Operation(summary = "Delete User")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+            @ApiResponse(responseCode = "404", description = "Not Found",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+    })
+    ResponseEntity<Void> deleteUser(final String id);
 }
