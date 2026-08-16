@@ -2,6 +2,7 @@ package com.kte.backend.controllers;
 
 import com.kte.backend.common.PageResponse;
 import com.kte.backend.models.dto.request.UserRequest;
+import com.kte.backend.models.dto.response.TransactionResponse;
 import com.kte.backend.models.dto.response.UserResponse;
 import com.kte.backend.models.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,4 +59,18 @@ public interface UIUserController {
                     content = @Content(schema = @Schema(implementation = Error.class))),
     })
     ResponseEntity<User> getCurrentUser();
+
+    @Operation(summary = "Get user and their transactions")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+            @ApiResponse(responseCode = "404", description = "Not Found",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+    })
+    ResponseEntity<PageResponse<TransactionResponse>> getUserAndTransactions(final String id, final Pageable pageable);
 }

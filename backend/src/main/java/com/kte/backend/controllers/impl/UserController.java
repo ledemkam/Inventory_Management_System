@@ -3,9 +3,11 @@ package com.kte.backend.controllers.impl;
 import com.kte.backend.common.PageResponse;
 import com.kte.backend.controllers.UIUserController;
 import com.kte.backend.models.dto.request.UserRequest;
+import com.kte.backend.models.dto.response.TransactionResponse;
 import com.kte.backend.models.dto.response.UserResponse;
 import com.kte.backend.models.entity.User;
 import com.kte.backend.services.authentication.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -35,8 +37,8 @@ public class UserController implements UIUserController {
     @PutMapping("/{user-id}")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable("user-id") final String id,
-            @RequestBody UserRequest request) {
-        log.debug("Received request to update user with id: {} and request: {}", id, request);
+            @RequestBody @Valid UserRequest request) {
+        log.debug("Received request to update user with user-id: {} and request: {}", id, request);
         final UserResponse updatedUser = userService.updateUser(id, request);
         return ResponseEntity.accepted().body(updatedUser);
     }
@@ -47,5 +49,16 @@ public class UserController implements UIUserController {
         log.debug("Received request to get current user");
         final User currentUser = userService.getCurrentLoggedInUser();
         return ResponseEntity.ok(currentUser);
+    }
+
+    @Override
+    @GetMapping("/transactions/{user-id}")
+    public ResponseEntity<PageResponse<TransactionResponse>> getUserAndTransactions(
+            @PathVariable("user-id") final String id,
+            final Pageable pageable
+    ) {
+        log.debug("Received request to get user and transactions for user-id: {}", id);
+        final PageResponse<TransactionResponse> userWithTransactions = userService.getUserTransactions(id, pageable);
+        return ResponseEntity.ok(userWithTransactions);
     }
 }
