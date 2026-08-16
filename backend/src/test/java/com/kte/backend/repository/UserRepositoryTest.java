@@ -40,21 +40,20 @@ class UserRepositoryTest {
         );
 
         //When
-        Optional<User> found = userRepository.findByEmail("jane.doe@example.com");
+        boolean found = userRepository.existsByEmail("jane.doe@example.com");
 
         //Then
-        assertThat(found).isPresent();
-        assertThat(found.get().getId()).isEqualTo(user.getId());
+        assertThat(found).isTrue();
     }
 
     @Test
-    @DisplayName("Return empty when no user matches the given email")
-    void findByEmail_ReturnsEmpty_WhenEmailDoesNotExist() {
+    @DisplayName("Return false when no user matches the given email")
+    void findByEmail_ReturnsFalse_WhenEmailDoesNotExist() {
         //When
-        Optional<User> found = userRepository.findByEmail("missing@example.com");
+        boolean found = userRepository.existsByEmail("missing@example.com");
 
         //Then
-        assertThat(found).isEmpty();
+        assertThat(found).isFalse();
     }
 
     @Test
