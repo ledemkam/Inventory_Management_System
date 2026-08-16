@@ -1,5 +1,6 @@
 package com.kte.backend.services.authentication.impl;
 
+import com.kte.backend.common.PageResponse;
 import com.kte.backend.exception.EntityAlreadyExistsException;
 import com.kte.backend.mapper.UserMapper;
 import com.kte.backend.models.dto.request.RegisterRequest;
@@ -13,8 +14,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -97,26 +106,90 @@ class UserServiceImplTest {
 
     @Test
     @DisplayName("Should return all users")
-    void getAllUsers() {
+    void should_Return_All_Users() {
+        //Given
+        final User userEntity1 = User.builder()
+                .id("1")
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .phoneNumber("1234567890")
+                .role(UserRole.MANAGER)
+                .build();
+
+        final User userEntity2 = User.builder()
+                .id("2")
+                .username("janedoe")
+                .email("janedoe@example.com")
+                .phoneNumber("0987654321")
+                .role(UserRole.ADMIN)
+                .build();
+
+        final UserResponse expectedResponse1 = UserResponse.builder()
+                .id("1")
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .phoneNumber("1234567890")
+                .role(UserRole.MANAGER)
+                .build();
+
+        final UserResponse expectedResponse2 = UserResponse.builder()
+                .id("2")
+                .username("janedoe")
+                .email("janedoe@example.com")
+                .phoneNumber("0987654321")
+                .role(UserRole.ADMIN)
+                .build();
+
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<User> userPage = new PageImpl<>(
+                List.of(userEntity1, userEntity2),
+                pageable,
+                2
+        );
+
+        when(userRepository.findAll(pageable)).thenReturn(userPage);
+        when(userMapper.entityToDto(userEntity1)).thenReturn(expectedResponse1);
+        when(userMapper.entityToDto(userEntity2)).thenReturn(expectedResponse2);
+
+        // When
+        PageResponse<UserResponse> result = userService.getAllUsers(pageable);
+
+        // Then
+        assertThat(result).isNotNull()
+                .hasFieldOrPropertyWithValue("page", 0)
+                .hasFieldOrPropertyWithValue("size", 10)
+                .hasFieldOrPropertyWithValue("totalElements", 2)
+                .hasFieldOrPropertyWithValue("totalPages", 1)
+                .hasFieldOrPropertyWithValue("hasNext", false)
+                .hasFieldOrPropertyWithValue("hasPrevious", false)
+                .hasFieldOrPropertyWithValue("isFirst", true)
+                .hasFieldOrPropertyWithValue("isLast", true);
+
+        assertThat(result.getContent())
+                .isNotNull()
+                .hasSize(2)
+                .containsExactly(expectedResponse1, expectedResponse2);
+
+
     }
 
     @Test
     @DisplayName("Should return the current logged-in user")
-    void getCurrentLoggedInUser() {
+    void should_ReturnTheCurrentLoggedInUser() {
     }
 
     @Test
     @DisplayName("Should update user details")
-    void updateUser() {
+    void should_UpdateUserDetails() {
     }
 
     @Test
     @DisplayName("Should delete user")
-    void deleteUser() {
+    void should_DeleteUser() {
     }
 
     @Test
     @DisplayName("Should return user transactions")
-    void getUserTransactions() {
+    void should_ReturnUserTransactions() {
     }
 }
