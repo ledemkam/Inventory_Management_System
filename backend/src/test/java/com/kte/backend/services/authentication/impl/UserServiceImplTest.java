@@ -8,6 +8,7 @@ import com.kte.backend.models.dto.response.UserResponse;
 import com.kte.backend.models.entity.User;
 import com.kte.backend.models.enums.UserRole;
 import com.kte.backend.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,12 +19,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,6 +49,11 @@ class UserServiceImplTest {
 
     @InjectMocks
     private UserServiceImpl userService;
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
+    }
 
     @Test
     @DisplayName("Should register user when user does not exist")
@@ -175,21 +185,47 @@ class UserServiceImplTest {
 
     @Test
     @DisplayName("Should return the current logged-in user")
-    void should_ReturnTheCurrentLoggedInUser() {
+    void should_Return_TheCurrent_Logged_In_User() {
+        // Given
+        final String userEmail = "johndoe@example.com";
+        final User expectedUser = User.builder()
+                .id("1")
+                .username("johndoe")
+                .email(userEmail)
+                .phoneNumber("1234567890")
+                .role(UserRole.MANAGER)
+                .build();
+
+        final Authentication authentication = mock(Authentication.class);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(authentication.getName()).thenReturn(userEmail);
+
+        final SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(expectedUser));
+
+        // When
+        final User actualUser = userService.getCurrentLoggedInUser();
+
+        // Then
+        assertEquals(expectedUser, actualUser);
+        verify(userRepository).findByEmail(userEmail);
     }
 
     @Test
     @DisplayName("Should update user details")
-    void should_UpdateUserDetails() {
+    void should_Update_UserDetails() {
     }
 
     @Test
     @DisplayName("Should delete user")
-    void should_DeleteUser() {
+    void should_Delete_User() {
     }
 
     @Test
     @DisplayName("Should return user transactions")
-    void should_ReturnUserTransactions() {
+    void should_Return_User_Transactions() {
     }
 }
