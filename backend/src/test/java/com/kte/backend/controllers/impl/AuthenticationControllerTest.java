@@ -3,7 +3,9 @@ package com.kte.backend.controllers.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.kte.backend.config.SecurityConfig;
+import com.kte.backend.models.dto.request.LoginRequest;
 import com.kte.backend.models.dto.request.RegisterRequest;
+import com.kte.backend.models.dto.response.LoginResponse;
 import com.kte.backend.models.dto.response.UserResponse;
 import com.kte.backend.models.enums.UserRole;
 import com.kte.backend.security.JwtTokenService;
@@ -84,6 +86,30 @@ class AuthenticationControllerTest {
     }
 
     @Test
-    void should_Login() {
+    @DisplayName("should login a user")
+    void should_Login() throws Exception {
+        //Given
+        final LoginRequest loginRequest = LoginRequest.builder()
+                .username("ledemkam")
+                .password("Password123!")
+                .build();
+
+        final LoginResponse expectedResponse = LoginResponse.builder()
+                .accessToken("dummy-jwt-token")
+                .tokenType("Bearer")
+                .build();
+
+        when(authenticationService.login(any(LoginRequest.class)))
+                .thenReturn(expectedResponse);
+
+        // When & Then
+        mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").value(expectedResponse.accessToken()))
+                .andExpect(jsonPath("$.tokenType").value(expectedResponse.tokenType()));
+
+        verify(authenticationService, times(1)).login(any(LoginRequest.class));
     }
 }
