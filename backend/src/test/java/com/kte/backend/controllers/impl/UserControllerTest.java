@@ -127,7 +127,7 @@ class UserControllerTest {
         // JwtAuthenticationFilter, so the JWT validation has to be mocked here too.
         when(jwtTokenService.validateToken(anyString())).thenReturn(true);
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
-
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("ADMIN");
 
         mockMvc.perform(put("/api/v1/users/{user-id}", "1")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
@@ -163,7 +163,7 @@ class UserControllerTest {
 
         when(jwtTokenService.validateToken(anyString())).thenReturn(true);
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
-
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("ADMIN");
 
         mockMvc.perform(get("/api/v1/users/current")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
