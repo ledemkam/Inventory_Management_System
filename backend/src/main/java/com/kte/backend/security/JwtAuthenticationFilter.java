@@ -1,5 +1,6 @@
 package com.kte.backend.security;
 
+import com.kte.backend.exception.AuthenticationEntryPointException;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -42,9 +43,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 final String userId = jwtTokenService.getUserIdFromTokEN(jwt);
                 final String role = jwtTokenService.getRoleFromToken(jwt);
 
+                if (role == null || role.isBlank()) {
+                    // UserRole only defines ADMIN/MANAGER - there is no generic fallback role in
+                    // this domain, so a token without a role claim can't be mapped to anything
+                    // @PreAuthorize checks understand. Treat it as an invalid token rather than
+                    // silently granting a phantom "ROLE_USER" authority.
+                    throw new AuthenticationEntryPointException("JWT token is missing the role claim");
+                }
 
-                //Create authentication token
-                final SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
+                // Spring roles are commonly stored as "ROLE_..." authorities, so normalize the JWT
+                // claim before creating the authentication token.
+                final String normalizedRole = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+                final SimpleGrantedAuthority authority = new SimpleGrantedAuthority(normalizedRole);
                 final UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 userId,
