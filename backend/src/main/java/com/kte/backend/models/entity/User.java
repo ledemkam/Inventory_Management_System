@@ -40,6 +40,9 @@ public class User extends AbstractEntity implements UserDetails {
     @Column(nullable = false)
     private UserRole role;
 
+    @OneToMany(mappedBy = "user")
+    private List<Transaction> transactions;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

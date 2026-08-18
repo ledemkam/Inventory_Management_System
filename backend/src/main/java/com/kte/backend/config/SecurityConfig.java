@@ -24,7 +24,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+// proxyTargetClass = true forces CGLIB (class-based) proxies for @PreAuthorize-secured
+// beans instead of JDK dynamic proxies. Controllers such as UserController implement an
+// interface (UIUserController) that doesn't carry the @RequestMapping annotations; a JDK
+// proxy would only expose that interface, silently dropping all route mappings.
+@EnableMethodSecurity(proxyTargetClass = true)
 public class SecurityConfig {
 
     @Bean
@@ -42,14 +46,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(
-            JwtTokenService jwtTokenService) {
-        return new JwtAuthenticationFilter(jwtTokenService);
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   JwtAuthenticationFilter jwtAuthenticationFilter) {
+                                                   JwtTokenService jwtTokenService) {
+        // JwtAuthenticationFilter is intentionally NOT a @Bean: if it were, Spring Boot/MockMvc
+        // auto-registers any Filter-typed bean as a standalone servlet filter in addition to
+        // wiring it here via addFilterBefore. That duplicate, out-of-band run executes before
+        // FilterChainProxy's SecurityContextHolderFilter, which then resets the context and
+        // (via OncePerRequestFilter's already-filtered guard) prevents the properly-placed
+        // execution from running at all, silently dropping the authentication it sets.
+        final JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenService);
         try {
             http
                     .authorizeHttpRequests(auth -> auth
