@@ -27,7 +27,7 @@ public class UserController implements UIUserController {
 
     @Override
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PageResponse<UserResponse>> getAllUsers(
             final Pageable pageable) {
         log.debug("Received request to get all users with pageable: {}", pageable);
@@ -37,6 +37,7 @@ public class UserController implements UIUserController {
 
     @Override
     @PutMapping("/{user-id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable("user-id") final String id,
             @RequestBody @Valid UserRequest request) {
@@ -55,6 +56,7 @@ public class UserController implements UIUserController {
 
     @Override
     @GetMapping("/transactions/{user-id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<PageResponse<TransactionResponse>> getUserAndTransactions(
             @PathVariable("user-id") final String id,
             final Pageable pageable
@@ -66,6 +68,7 @@ public class UserController implements UIUserController {
 
     @Override
     @DeleteMapping("/{user-id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable("user-id") String id) {
         log.debug("Received request to delete user with user-id: {}", id);
         userService.deleteUser(id);
