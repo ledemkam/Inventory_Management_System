@@ -37,7 +37,6 @@ public class UserController implements UIUserController {
 
     @Override
     @PutMapping("/{user-id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable("user-id") final String id,
             @RequestBody @Valid UserRequest request) {
