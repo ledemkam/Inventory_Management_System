@@ -30,14 +30,13 @@ class UserRepositoryTest {
     @DisplayName("Find user by email")
     void findByEmail_ReturnsUser_WhenEmailExists() {
         //Given
-        User user = userRepository.save(
-                User.builder()
-                        .username("Jane Doe")
-                        .email("jane.doe@example.com")
-                        .password("encoded-password")
-                        .role(UserRole.ADMIN)
-                        .build()
-        );
+        User user = User.builder()
+                .username("Jane Doe")
+                .email("jane.doe@example.com")
+                .password("encoded-password")
+                .role(UserRole.ADMIN)
+                .build();
+        userRepository.save(user);
 
         //When
         boolean found = userRepository.existsByEmail("jane.doe@example.com");
