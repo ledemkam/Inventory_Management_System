@@ -1,0 +1,56 @@
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser3",
+  "password": "testpassword1",
+  "email": "testuser3@example.com",
+  "phoneNumber": "017612345783",
+  "role": "ADMIN"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser3",
+  "password": "testpassword1"
+}
+
+###
+
+GET http://localhost:8080/api/v1/users
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNzYwOWIyYS04MTM4LTQxMjYtYjMxMC0zMTAwYWFlMDQ0NGYiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODY5MTE3MDMsImV4cCI6MTc4Njk5ODEwM30.5M7rWktqs--Sm8Lapfg3QP3fwXd28WwTRGjXNID1Q2g
+
+###
+PUT http://localhost:8080/api/v1/users/0f2c16f4-c251-41ce-86d2-50293432402a
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwYmRlYTJkZC1mOGMzLTRiZmQtYWRkZi03Y2MxZjczYmU3YTUiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODY4OTc3ODAsImV4cCI6MTc4Njk4NDE4MH0.dX7WvCjlTVE1hpKCJR5TtOA-6rI0BPA0UBK1yLDLiY8
+
+{
+  "username": "updateduser",
+  "email": "updateduser@example.com",
+  "password": "updatedpassword1",
+  "phoneNumber": "01761234579",
+  "role": "MANAGER"
+}
+
+###
+GET http://localhost:8080/api/v1/users/transactions/0bdea2dd-f8c3-4bfd-addf-7cc1f73be7a5
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNzYwOWIyYS04MTM4LTQxMjYtYjMxMC0zMTAwYWFlMDQ0NGYiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODY5MTE3MDMsImV4cCI6MTc4Njk5ODEwM30.5M7rWktqs--Sm8Lapfg3QP3fwXd28WwTRGjXNID1Q2g
+
+###
+DELETE http://localhost:8080/api/v1/users/0bdea2dd-f8c3-4bfd-addf-7cc1f73be7a5
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwYmRlYTJkZC1mOGMzLTRiZmQtYWRkZi03Y2MxZjczYmU3YTUiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODY4OTc3ODAsImV4cCI6MTc4Njk4NDE4MH0.dX7WvCjlTVE1hpKCJR5TtOA-6rI0BPA0UBK1yLDLiY8
+
+###
+GET http://localhost:8080/api/v1/users/current
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNzYwOWIyYS04MTM4LTQxMjYtYjMxMC0zMTAwYWFlMDQ0NGYiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODY5MTE3MDMsImV4cCI6MTc4Njk5ODEwM30.5M7rWktqs--Sm8Lapfg3QP3fwXd28WwTRGjXNID1Q2g
+
+
