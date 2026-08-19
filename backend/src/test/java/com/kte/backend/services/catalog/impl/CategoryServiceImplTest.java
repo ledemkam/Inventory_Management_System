@@ -134,7 +134,19 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void findById() {
+    @DisplayName("Test findById method")
+    void should_find_category_By_Id() {
+        //GIVEN
+        when(categoryValidator.findCategoryOrThrow(category.getId())).thenReturn(category);
+        when(categoryMapper.entityToDto(category)).thenReturn(categoryResponse);
+
+        //WHEN
+        CategoryResponse response = categoryService.findById(category.getId());
+
+        //THEN
+        assertThat(response).isNotNull();
+        assertThat(response.id()).isEqualTo(categoryResponse.id());
+        assertThat(response.name()).isEqualTo(categoryResponse.name());
     }
 
     @Test
