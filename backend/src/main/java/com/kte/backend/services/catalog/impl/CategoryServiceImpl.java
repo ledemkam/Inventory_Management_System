@@ -1,6 +1,7 @@
 package com.kte.backend.services.catalog.impl;
 
 import com.kte.backend.Validator.CategoryValidator;
+import com.kte.backend.common.PageResponse;
 import com.kte.backend.mapper.CategoryMapper;
 import com.kte.backend.models.dto.request.CategoryRequest;
 import com.kte.backend.models.dto.response.CategoryResponse;
@@ -9,6 +10,7 @@ import com.kte.backend.repository.CategoryRepository;
 import com.kte.backend.services.catalog.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -38,6 +40,13 @@ public class CategoryServiceImpl implements CategoryService {
         categoryMapper.updateEntityFromDto(request, entity);
         final Category updatedEntity = categoryRepository.save(entity);
         return categoryMapper.entityToDto(updatedEntity);
+    }
+
+    @Override
+    public PageResponse<CategoryResponse> findAll(Pageable pageable) {
+        log.debug("Fetching all categories with pagination: page {}, size {}", pageable.getPageNumber(),
+                pageable.getPageSize());
+        return PageResponse.of(categoryRepository.findAll(pageable).map(categoryMapper::entityToDto));
     }
 
     @Override
