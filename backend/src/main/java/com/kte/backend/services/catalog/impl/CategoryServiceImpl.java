@@ -56,5 +56,12 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.entityToDto(entity);
     }
 
+    @Override
+    public void delete(String s) {
+        final Category entity = categoryValidator.findCategoryOrThrow(s);
+        log.info("Deleting category with id: {}", entity.getId());
+        categoryRepository.delete(entity);
+    }
+
 
 }
