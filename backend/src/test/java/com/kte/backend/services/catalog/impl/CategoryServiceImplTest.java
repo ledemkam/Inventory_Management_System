@@ -1,6 +1,7 @@
 package com.kte.backend.services.catalog.impl;
 
 import com.kte.backend.Validator.CategoryValidator;
+import com.kte.backend.common.PageResponse;
 import com.kte.backend.mapper.CategoryMapper;
 import com.kte.backend.models.dto.request.CategoryRequest;
 import com.kte.backend.models.dto.response.CategoryResponse;
@@ -13,6 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -98,7 +103,34 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void findAll() {
+    @DisplayName("Test findAll method")
+    void should_find_All_categories() {
+        //GIVEN
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Category> categoryPage = new PageImpl<>(List.of(category), pageable, 1);
+        when(categoryRepository.findAll(pageable)).thenReturn(categoryPage);
+        when(categoryMapper.entityToDto(category)).thenReturn(categoryResponse);
+
+        //WHEN
+        PageResponse<CategoryResponse> responsePage = categoryService.findAll(pageable);
+
+        //THEN
+        assertThat(responsePage).isNotNull()
+                .hasFieldOrPropertyWithValue("page", 0)
+                .hasFieldOrPropertyWithValue("size", 10)
+                .hasFieldOrPropertyWithValue("totalElements", 1)
+                .hasFieldOrPropertyWithValue("totalPages", 1)
+                .hasFieldOrPropertyWithValue("hasNext", false)
+                .hasFieldOrPropertyWithValue("hasPrevious", false)
+                .hasFieldOrPropertyWithValue("isFirst", true)
+                .hasFieldOrPropertyWithValue("isLast", true);
+
+        assertThat(responsePage.getContent())
+                .isNotNull()
+                .hasSize(1)
+                .containsExactly(categoryResponse);
+
+
     }
 
     @Test
