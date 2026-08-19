@@ -75,11 +75,26 @@ class CategoryServiceImplTest {
 
         //THEN
         assertThat(response).isNotNull();
-       
+        assertThat(response.id()).isEqualTo(categoryResponse.id());
+        assertThat(response.name()).isEqualTo(categoryResponse.name());
     }
 
     @Test
-    void update() {
+    @DisplayName("Test update method")
+    void should_update_category_when_exist() {
+        //GIVEN
+        when(categoryValidator.findCategoryOrThrow(category.getId())).thenReturn(category);
+        doNothing().when(categoryMapper).updateEntityFromDto(categoryRequest, category);
+        when(categoryRepository.save(any(Category.class))).thenReturn(category);
+        when(categoryMapper.entityToDto(any(Category.class))).thenReturn(categoryResponse);
+
+        //WHEN
+        CategoryResponse response = categoryService.update(category.getId(), categoryRequest);
+
+        //THEN
+        assertThat(response).isNotNull();
+        assertThat(response.id()).isEqualTo(categoryResponse.id());
+        assertThat(response.name()).isEqualTo(categoryResponse.name());
     }
 
     @Test
