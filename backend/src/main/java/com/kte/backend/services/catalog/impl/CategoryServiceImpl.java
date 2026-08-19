@@ -32,6 +32,15 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public CategoryResponse update(final String id, final CategoryRequest request) {
+        log.info("Updating category with id: {}", id);
+        final Category entity = categoryValidator.findCategoryOrThrow(id);
+        categoryMapper.updateEntityFromDto(request, entity);
+        final Category updatedEntity = categoryRepository.save(entity);
+        return categoryMapper.entityToDto(updatedEntity);
+    }
+
+    @Override
     public CategoryResponse findById(final String id) {
         final Category entity = categoryValidator.findCategoryOrThrow(id);
         log.info("Found category with id: {}", entity.getId());
