@@ -31,5 +31,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     }
 
+    @Override
+    public CategoryResponse findById(final String id) {
+        final Category entity = categoryValidator.findCategoryOrThrow(id);
+        log.info("Found category with id: {}", entity.getId());
+        return categoryMapper.entityToDto(entity);
+    }
+
 
 }
