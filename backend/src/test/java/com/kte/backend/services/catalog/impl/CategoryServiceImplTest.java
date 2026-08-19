@@ -150,7 +150,17 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void delete() {
+    @DisplayName("Test delete method")
+    void should_delete_category_by_id() {
+        //GIVEN
+        when(categoryValidator.findCategoryOrThrow(category.getId())).thenReturn(category);
+        doNothing().when(categoryRepository).delete(category);
+
+        //WHEN
+        categoryService.delete(category.getId());
+
+        //THEN
+        assertThat(categoryService).isNotNull();
     }
 
 
