@@ -15,7 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "UI Category Controller", description = "Endpoints for managing categories")
+@Tag(name = "Category Controller", description = "Endpoints for managing categories")
 public interface UICategoryController {
 
     @Operation(summary = "Create Category")
