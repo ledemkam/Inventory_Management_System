@@ -49,7 +49,6 @@ public interface UICategoryController {
                     content = @Content(schema = @Schema(implementation = Error.class))),
     })
     ResponseEntity<CategoryResponse> updateCategory(final String id,
-                                                    final CategoryRequest request,
                                                     @Valid @RequestBody final CategoryRequest categoryRequest);
 
     @Operation(summary = "Get all Categories")
