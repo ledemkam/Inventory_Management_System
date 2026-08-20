@@ -61,7 +61,11 @@ public class CategoryController implements UICategoryController {
     }
 
     @Override
-    public ResponseEntity<Void> deleteCategory(final String id) {
-        return null;
+    @DeleteMapping("/{category-id}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Void> deleteCategory(@PathVariable("category-id") final String id) {
+        log.info("Received request to delete category with id: {}", id);
+        categoryService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
