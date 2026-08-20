@@ -47,14 +47,17 @@ public class CategoryController implements UICategoryController {
     @Override
     @GetMapping
     public ResponseEntity<PageResponse<CategoryResponse>> getAllCategories(final Pageable pageable) {
-        log.debug("Received request to get all categories with pageable: {}", pageable);
+        log.info("Received request to get all categories with pageable: {}", pageable);
         PageResponse<CategoryResponse> response = categoryService.findAll(pageable);
         return ResponseEntity.ok(response);
     }
 
     @Override
-    public ResponseEntity<CategoryResponse> getCategoryById(final String id) {
-        return null;
+    @GetMapping("/{category-id}")
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable("category-id") final String id) {
+        log.debug("Received request to get category by id: {}", id);
+        CategoryResponse response = categoryService.findById(id);
+        return ResponseEntity.ok(response);
     }
 
     @Override
