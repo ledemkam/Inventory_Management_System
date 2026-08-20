@@ -15,7 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "UI User Controllers", description = "Endpoints for managing users")
+@Tag(name = "User Controller", description = "Endpoints for managing users")
 public interface UIUserController {
     @Operation(summary = "Get all Users")
     @ApiResponses(value = {

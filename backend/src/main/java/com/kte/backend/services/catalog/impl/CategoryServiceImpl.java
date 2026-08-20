@@ -8,6 +8,8 @@ import com.kte.backend.models.dto.response.CategoryResponse;
 import com.kte.backend.models.entity.Category;
 import com.kte.backend.repository.CategoryRepository;
 import com.kte.backend.services.catalog.CategoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;

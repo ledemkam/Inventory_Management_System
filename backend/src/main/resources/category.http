@@ -1,0 +1,8 @@
+POST http://localhost:8080/api/v1/categories
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjMxZGI1OC0wMGNjLTQ1MGMtYWU1Zi1iY2MwYTI3N2IxMTEiLCJyb2xlIjoiTUFOQUdFUiIsImlhdCI6MTc4NzI0ODEzNiwiZXhwIjoxNzg3MzM0NTM2fQ.GQ2976xlWJu9KID8Gzd4T_5MVeCNVDJQdUtusTekeD4
+
+{
+  "name": "Möbel",
+  "description": "Furniture and home decor"
+}

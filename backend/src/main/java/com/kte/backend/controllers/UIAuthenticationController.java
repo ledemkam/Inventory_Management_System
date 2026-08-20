@@ -15,7 +15,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "UI Authentication Controllers", description = "Endpoints for Login and Registration")
+@Tag(name = "Authentication Controllers", description = "Endpoints for Login and Registration")
 public interface UIAuthenticationController {
 
     @Operation(summary = "Registration Endpoint", description = "Endpoint for user registration")
