@@ -20,5 +20,5 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjMxZGI1OC0wMGNjLTQ1MGMtY
 
 ###
 
-GET http://localhost:8080/api/v1/categories
+GET http://localhost:8080/api/v1/categories/e8ec0243-c2e6-4f47-8bfe-f2098a326f0a
 
