@@ -36,16 +36,20 @@ public class CategoryController implements UICategoryController {
 
     @Override
     @PutMapping("/{category-id}")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable("category-id") final String id,
                                                            @RequestBody @Valid final CategoryRequest request) {
-        log.debug("Received request to update category with id: {} and request: {}", id, request);
-        categoryService.update(id, request);
-        return ResponseEntity.ok().build();
+        log.info("Received request to update category with id: {} and request: {}", id, request);
+        CategoryResponse updatedCategory = categoryService.update(id, request);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedCategory);
     }
 
     @Override
+    @GetMapping
     public ResponseEntity<PageResponse<CategoryResponse>> getAllCategories(final Pageable pageable) {
-        return null;
+        log.debug("Received request to get all categories with pageable: {}", pageable);
+        PageResponse<CategoryResponse> response = categoryService.findAll(pageable);
+        return ResponseEntity.ok(response);
     }
 
     @Override
