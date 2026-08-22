@@ -30,8 +30,8 @@ public class CategoryController implements UICategoryController {
             @RequestBody
             @Valid final CategoryRequest request) {
         log.info("Received request to create category with request: {}", request);
-        categoryService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        CategoryResponse createdCategory = categoryService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
     }
 
     @Override
