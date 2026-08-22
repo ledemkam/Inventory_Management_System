@@ -27,13 +27,13 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Backend Inventory Management System")
+                        .title("Inventory Management System")
                         .version("1.0.0")
-                        .description("API RESTfull for Inventory Management System"))
+                        .description("API RESTfull"))
                 .servers(List.of(
                         new Server()
                                 .url("http://localhost:8080")
-                                .description("Development server")
+                                .description("Backend Development")
                 ));
 
     }

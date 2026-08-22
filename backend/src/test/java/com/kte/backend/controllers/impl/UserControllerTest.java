@@ -106,6 +106,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("should update a user")
+    @WithMockUser(roles = "ADMIN")
     void should_Update_User() throws Exception {
         final UserRequest updateRequest = UserRequest.builder()
                 .username("updateduser")
@@ -143,6 +144,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("should return the current logged in user")
+    @WithMockUser(roles = "ADMIN")
     void should_Return_Current_User() throws Exception {
         final User currentUser = User.builder()
                 .id("1")
