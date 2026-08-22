@@ -1,9 +1,9 @@
 package com.kte.backend.controllers.impl;
 
-import static org.hamcrest.Matchers.hasSize;
+
 import static org.hamcrest.Matchers.is;
 
-import static org.mockito.ArgumentMatchers.any;
+
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -27,12 +27,9 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 @WebMvcTest(CategoryController.class)
@@ -58,6 +55,7 @@ class CategoryControllerTest {
     private Category category;
     private CategoryResponse categoryResponse;
     private CategoryRequest categoryRequest;
+    private CategoryResponse updatedCategoryResponse;
 
     @BeforeEach
     void setUp() {
@@ -72,11 +70,18 @@ class CategoryControllerTest {
         categoryRequest = CategoryRequest.builder()
                 .name("Electronics")
                 .build();
+        updatedCategoryResponse = CategoryResponse.builder()
+                .id("1")
+                .name("ElectronicsUpdated")
+                .build();
         objectMapper = new ObjectMapper();
+
+
     }
 
     @Test
     @DisplayName("Should return created category")
+    @WithMockUser(roles = "MANAGER")
     void should_Return_created_Category() throws Exception {
         //GIVEN
         when(categoryService.create(categoryRequest)).thenReturn(categoryResponse);
@@ -98,7 +103,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    @DisplayName("Should reject category creation for non-manager role")
+    @DisplayName("Should reject category creation for no-manager role")
     void should_Reject_created_Category_When_Not_Manager() throws Exception {
         //GIVEN
         when(jwtTokenService.validateToken(anyString())).thenReturn(true);
@@ -113,18 +118,61 @@ class CategoryControllerTest {
     }
 
     @Test
-    void updateCategory() {
+    @DisplayName("Should return updated category")
+    @WithMockUser(roles = "MANAGER")
+    void should_Return_Updated_Category() throws Exception {
+        //GIVEN
+        when(categoryService.update("1", categoryRequest)).thenReturn(updatedCategoryResponse);
+        // The security filter chain is stateless (SessionCreationPolicy.STATELESS), so the
+        // SecurityContext is (re)established per-request by JwtAuthenticationFilter reading the
+        // bearer token, not by a session/test-context shortcut such as @WithMockUser. Mock the
+        // token validation so the filter grants the MANAGER authority the endpoint requires.
+        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("MANAGER");
+        //WHEN & THEN
+        mockMvc.perform(put("/api/v1/categories/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(categoryRequest)))
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.id", is("1")))
+                .andExpect(jsonPath("$.name", is("ElectronicsUpdated")));
     }
 
     @Test
-    void getAllCategories() {
+    @DisplayName("Should return updated category when no manager")
+    void should_Return_Updated_Category_When_No_Manager() throws Exception {
+        //GIVEN
+        when(categoryService.update("1", categoryRequest)).thenReturn(updatedCategoryResponse);
+        // The security filter chain is stateless (SessionCreationPolicy.STATELESS), so the
+        // SecurityContext is (re)established per-request by JwtAuthenticationFilter reading the
+        // bearer token, not by a session/test-context shortcut such as @WithMockUser. Mock the
+        // token validation so the filter grants the MANAGER authority the endpoint requires.
+        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("ADMIN");
+        //WHEN & THEN
+        mockMvc.perform(put("/api/v1/categories/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(categoryRequest)))
+                .andExpect(status().isForbidden());
+
     }
 
     @Test
-    void getCategoryById() {
+    @DisplayName("Should return all categories")
+    void should_Return_All_Categories() throws Exception {
     }
 
     @Test
-    void deleteCategory() {
+    @DisplayName("Should return category by id")
+    void should_Return_Category_By_Id() throws Exception {
+    }
+
+    @Test
+    @DisplayName("Should delete category")
+    void should_Delete_Category() throws Exception {
     }
 }
