@@ -214,6 +214,34 @@ class CategoryControllerTest {
 
     @Test
     @DisplayName("Should delete category")
+    @WithMockUser(roles = "MANAGER")
     void should_Delete_Category() throws Exception {
+        String categoryId = "1";
+        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("MANAGER");
+        //WHEN & THEN
+        mockMvc.perform(delete("/api/v1/categories/" + categoryId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                        .content(objectMapper.writeValueAsString(categoryResponse))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    @DisplayName("Should delete category when no manager")
+    void should_Delete_Category_When_No_Manager() throws Exception {
+        String categoryId = "1";
+        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("ADMIN");
+        //WHEN & THEN
+        mockMvc.perform(delete("/api/v1/categories/" + categoryId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                        .content(objectMapper.writeValueAsString(categoryResponse))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+
     }
 }
