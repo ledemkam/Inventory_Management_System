@@ -212,6 +212,9 @@ class UserServiceImplTest {
         when(userRepository.save(existingUser)).thenReturn(savedUser);
         when(userMapper.entityToDto(savedUser)).thenReturn(expectedResponse);
 
+        // The request changes the role, which only an ADMIN/MANAGER caller is allowed to do.
+        mockAuthenticatedRole("ROLE_ADMIN");
+
         // When
         final UserResponse actualResponse = userService.updateUser(userId, userRequest);
 
@@ -222,6 +225,93 @@ class UserServiceImplTest {
         verify(userMapper).updateEntityFromDto(userRequest, existingUser);
         verify(passwordEncoder).encode(userRequest.password());
         verify(userRepository).save(existingUser);
+    }
+
+    @Test
+    @DisplayName("Should update a user's own profile without changing role, with no authentication required for that")
+    void should_Update_Own_Profile_When_Role_Not_Changed() {
+        // Given
+        final String userId = "1";
+        final UserRequest userRequest = UserRequest.builder()
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .password("newPassword")
+                .build();
+
+        final User existingUser = User.builder()
+                .id(userId)
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .password("oldEncodedPassword")
+                .role(UserRole.USER)
+                .build();
+
+        final User savedUser = User.builder()
+                .id(userId)
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .password("newEncodedPassword")
+                .role(UserRole.USER)
+                .build();
+
+        final UserResponse expectedResponse = UserResponse.builder()
+                .id(userId)
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .role(UserRole.USER)
+                .build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(passwordEncoder.encode(userRequest.password())).thenReturn("newEncodedPassword");
+        when(userRepository.save(existingUser)).thenReturn(savedUser);
+        when(userMapper.entityToDto(savedUser)).thenReturn(expectedResponse);
+
+        // No role field in the request, so no elevated authority is required (self-service edit).
+
+        // When
+        final UserResponse actualResponse = userService.updateUser(userId, userRequest);
+
+        // Then
+        assertEquals(expectedResponse, actualResponse);
+        verify(userRepository).save(existingUser);
+    }
+
+    @Test
+    @DisplayName("Should deny a role change attempted by a caller without ADMIN/MANAGER authority")
+    void should_Deny_Role_Change_When_Caller_Is_Not_Admin_Or_Manager() {
+        // Given
+        final String userId = "1";
+        final UserRequest userRequest = UserRequest.builder()
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .role(UserRole.ADMIN)
+                .build();
+
+        final User existingUser = User.builder()
+                .id(userId)
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .role(UserRole.USER)
+                .build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        mockAuthenticatedRole("ROLE_USER");
+
+        // When / Then
+        assertThatThrownBy(() -> userService.updateUser(userId, userRequest))
+                .isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    private void mockAuthenticatedRole(final String authority) {
+        final Authentication authentication = mock(Authentication.class);
+        doReturn(List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority(authority)))
+                .when(authentication).getAuthorities();
+
+        final SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
     }
 
 
