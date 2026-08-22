@@ -1,0 +1,42 @@
+# Local development overrides. Active by default (see spring.profiles.active
+# in application.yaml) so `mvn spring-boot:run` / IDE runs work out of the box.
+# Real deployments MUST set SPRING_PROFILES_ACTIVE=production to avoid these
+# convenience-oriented, insecure-by-design settings.
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+
+  datasource:
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+
+logging:
+  level:
+    root: INFO
+    com.kte.backend: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.springframework.transaction: DEBUG
+    org.springframework.cache: TRACE
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: '%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr([%thread]){blue} %clr(%-5level){highlight} %clr(%logger{36}){cyan} - %msg%n'
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
