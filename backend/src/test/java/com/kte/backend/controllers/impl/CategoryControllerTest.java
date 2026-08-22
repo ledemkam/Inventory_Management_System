@@ -1,19 +1,23 @@
 package com.kte.backend.controllers.impl;
 
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kte.backend.common.PageResponse;
 import com.kte.backend.config.SecurityConfig;
 import com.kte.backend.mapper.CategoryMapper;
 import com.kte.backend.models.dto.request.CategoryRequest;
 import com.kte.backend.models.dto.response.CategoryResponse;
+import com.kte.backend.models.dto.response.UserResponse;
 import com.kte.backend.models.entity.Category;
 import com.kte.backend.security.JwtTokenService;
 import com.kte.backend.services.catalog.CategoryService;
@@ -30,6 +34,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 
 @WebMvcTest(CategoryController.class)
@@ -164,6 +170,29 @@ class CategoryControllerTest {
     @Test
     @DisplayName("Should return all categories")
     void should_Return_All_Categories() throws Exception {
+        //GIVEN
+        final PageResponse<CategoryResponse> categoryResponses = PageResponse.<CategoryResponse>builder()
+                .content(List.of(categoryResponse))
+                .page(0)
+                .size(10)
+                .totalElements(1)
+                .totalPages(1)
+                .hasNext(false)
+                .hasPrevious(false)
+                .isFirst(true)
+                .isLast(true)
+                .build();
+        when(categoryService.findAll(any())).thenReturn(categoryResponses);
+        //WHEN & THEN
+        mockMvc.perform(get("/api/v1/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(categoryResponses)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id", is("1")))
+                .andExpect(jsonPath("$.content[0].name", is("Electronics")))
+                .andExpect(status().isOk());
+
     }
 
     @Test
