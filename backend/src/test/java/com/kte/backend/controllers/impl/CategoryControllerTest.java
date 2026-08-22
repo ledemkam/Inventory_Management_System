@@ -65,19 +65,20 @@ class CategoryControllerTest {
 
     @BeforeEach
     void setUp() {
+        String categoryId = "1";
         category = Category.builder()
-                .id("1")
+                .id(categoryId)
                 .name("Electronics")
                 .build();
         categoryResponse = CategoryResponse.builder()
-                .id("1")
+                .id(categoryId)
                 .name("Electronics")
                 .build();
         categoryRequest = CategoryRequest.builder()
                 .name("Electronics")
                 .build();
         updatedCategoryResponse = CategoryResponse.builder()
-                .id("1")
+                .id(categoryId)
                 .name("ElectronicsUpdated")
                 .build();
         objectMapper = new ObjectMapper();
@@ -128,7 +129,8 @@ class CategoryControllerTest {
     @WithMockUser(roles = "MANAGER")
     void should_Return_Updated_Category() throws Exception {
         //GIVEN
-        when(categoryService.update("1", categoryRequest)).thenReturn(updatedCategoryResponse);
+        String categoryId = "1";
+        when(categoryService.update(categoryId, categoryRequest)).thenReturn(updatedCategoryResponse);
         // The security filter chain is stateless (SessionCreationPolicy.STATELESS), so the
         // SecurityContext is (re)established per-request by JwtAuthenticationFilter reading the
         // bearer token, not by a session/test-context shortcut such as @WithMockUser. Mock the
@@ -137,12 +139,12 @@ class CategoryControllerTest {
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("MANAGER");
         //WHEN & THEN
-        mockMvc.perform(put("/api/v1/categories/1")
+        mockMvc.perform(put("/api/v1/categories/" + categoryId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(categoryRequest)))
                 .andExpect(status().isAccepted())
-                .andExpect(jsonPath("$.id", is("1")))
+                .andExpect(jsonPath("$.id", is(categoryId)))
                 .andExpect(jsonPath("$.name", is("ElectronicsUpdated")));
     }
 
@@ -150,7 +152,8 @@ class CategoryControllerTest {
     @DisplayName("Should return updated category when no manager")
     void should_Return_Updated_Category_When_No_Manager() throws Exception {
         //GIVEN
-        when(categoryService.update("1", categoryRequest)).thenReturn(updatedCategoryResponse);
+        String categoryId = "1";
+        when(categoryService.update(categoryId, categoryRequest)).thenReturn(updatedCategoryResponse);
         // The security filter chain is stateless (SessionCreationPolicy.STATELESS), so the
         // SecurityContext is (re)established per-request by JwtAuthenticationFilter reading the
         // bearer token, not by a session/test-context shortcut such as @WithMockUser. Mock the
@@ -159,7 +162,7 @@ class CategoryControllerTest {
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("ADMIN");
         //WHEN & THEN
-        mockMvc.perform(put("/api/v1/categories/1")
+        mockMvc.perform(put("/api/v1/categories/" + categoryId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(categoryRequest)))
@@ -198,6 +201,15 @@ class CategoryControllerTest {
     @Test
     @DisplayName("Should return category by id")
     void should_Return_Category_By_Id() throws Exception {
+        String categoryId = "1";
+        when(categoryService.findById(categoryId)).thenReturn(categoryResponse);
+        //WHEN & THEN
+        mockMvc.perform(get("/api/v1/categories/" + categoryId)
+                        .content(objectMapper.writeValueAsString(categoryResponse))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(categoryId)))
+                .andExpect(jsonPath("$.name", is("Electronics")));
     }
 
     @Test
