@@ -45,8 +45,10 @@ public class SupplierServiceImpl implements SupplierService {
 
 
     @Override
-    public PageResponse<SupplierResponse> findAll(Pageable pageable) {
-        return null;
+    public PageResponse<SupplierResponse> findAll(final Pageable pageable) {
+        log.debug("Fetching all suppliers with pagination: page {}, size {}", pageable.getPageNumber(),
+                pageable.getPageSize());
+        return PageResponse.of(supplierRepository.findAll(pageable).map(supplierMapper::entityToDto));
     }
 
     @Override
