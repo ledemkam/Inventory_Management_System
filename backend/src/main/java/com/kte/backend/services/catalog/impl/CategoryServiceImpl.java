@@ -1,6 +1,6 @@
 package com.kte.backend.services.catalog.impl;
 
-import com.kte.backend.Validator.CategoryValidator;
+import com.kte.backend.validator.CategoryValidator;
 import com.kte.backend.common.PageResponse;
 import com.kte.backend.mapper.CategoryMapper;
 import com.kte.backend.models.dto.request.CategoryRequest;
@@ -8,7 +8,6 @@ import com.kte.backend.models.dto.response.CategoryResponse;
 import com.kte.backend.models.entity.Category;
 import com.kte.backend.repository.CategoryRepository;
 import com.kte.backend.services.catalog.CategoryService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +45,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public PageResponse<CategoryResponse> findAll(Pageable pageable) {
+    public PageResponse<CategoryResponse> findAll(final Pageable pageable) {
         log.debug("Fetching all categories with pagination: page {}, size {}", pageable.getPageNumber(),
                 pageable.getPageSize());
         return PageResponse.of(categoryRepository.findAll(pageable).map(categoryMapper::entityToDto));
@@ -60,8 +59,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void delete(String s) {
-        final Category entity = categoryValidator.findCategoryOrThrow(s);
+    public void delete(final String id) {
+        final Category entity = categoryValidator.findCategoryOrThrow(id);
         log.info("Deleting category with id: {}", entity.getId());
         categoryRepository.delete(entity);
     }

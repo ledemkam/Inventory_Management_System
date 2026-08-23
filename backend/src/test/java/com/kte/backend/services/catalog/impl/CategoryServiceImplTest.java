@@ -1,6 +1,6 @@
 package com.kte.backend.services.catalog.impl;
 
-import com.kte.backend.Validator.CategoryValidator;
+import com.kte.backend.validator.CategoryValidator;
 import com.kte.backend.common.PageResponse;
 import com.kte.backend.mapper.CategoryMapper;
 import com.kte.backend.models.dto.request.CategoryRequest;
@@ -26,7 +26,6 @@ import static org.mockito.Mockito.doNothing;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
