@@ -10,7 +10,6 @@ import com.kte.backend.services.catalog.SupplierService;
 import com.kte.backend.validator.SupplierValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.jdbc.HikariCheckpointRestoreLifecycle;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -52,12 +51,17 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    public SupplierResponse findById(String s) {
-        return null;
+    public SupplierResponse findById(final String id) {
+        log.debug("Fetching supplier with id: {}", id);
+        final Supplier entity = supplierValidator.findSupplierOrThrow(id);
+        return supplierMapper.entityToDto(entity);
     }
 
     @Override
-    public void delete(String s) {
+    public void delete(final String id) {
+        log.info("Deleting supplier with id: {}", id);
+        final Supplier entity = supplierValidator.findSupplierOrThrow(id);
+        supplierRepository.delete(entity);
 
     }
 }
