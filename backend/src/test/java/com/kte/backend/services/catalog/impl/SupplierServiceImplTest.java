@@ -25,8 +25,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
 @DisplayName("SupplierServiceImpl Unit Tests")
@@ -111,5 +110,29 @@ class SupplierServiceImplTest {
 
         //Then
         assertThat(response).isNotNull();
+    }
+
+    @Test
+    @DisplayName("should find supplier by id")
+    void should_find_supplier_by_id() {
+        //Given
+        when(supplierValidator.findSupplierOrThrow(supplier.getId())).thenReturn(supplier);
+        when(supplierMapper.entityToDto(supplier)).thenReturn(supplierResponse);
+        //When
+        SupplierResponse response = supplierService.findById(supplier.getId());
+        //Then
+        assertThat(response).isNotNull();
+    }
+
+    @Test
+    @DisplayName("should delete supplier by id")
+    void should_delete_supplier_by_id() {
+        //Given
+        when(supplierValidator.findSupplierOrThrow(supplier.getId())).thenReturn(supplier);
+        doNothing().when(supplierRepository).delete(supplier);
+        //When
+        supplierService.delete(supplier.getId());
+        //Then
+        verify(supplierRepository, times(1)).delete(supplier);
     }
 }
