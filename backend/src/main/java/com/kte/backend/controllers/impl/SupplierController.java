@@ -48,6 +48,7 @@ public class SupplierController implements UISupplierController {
     @GetMapping
     public ResponseEntity<PageResponse<SupplierResponse>> getAllSuppliers(Pageable pageable) {
         PageResponse<SupplierResponse> suppliers = supplierService.findAll(pageable);
+        log.debug("Received request to get all suppliers with pageable: {}", pageable);
         return ResponseEntity.ok(suppliers);
     }
 
@@ -56,6 +57,7 @@ public class SupplierController implements UISupplierController {
     public ResponseEntity<SupplierResponse> getSupplierById(
             @PathVariable("supplier-id") final String id) {
         SupplierResponse supplier = supplierService.findById(id);
+        log.debug("Received request to get supplier by id: {}", id);
         return ResponseEntity.ok(supplier);
     }
 
@@ -63,6 +65,7 @@ public class SupplierController implements UISupplierController {
     @DeleteMapping("/{supplier-id}")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Void> deleteSupplier(@PathVariable("supplier-id") final String id) {
+        log.info("Received request to delete supplier with id: {}", id);
         supplierService.delete(id);
         return ResponseEntity.noContent().build();
     }
