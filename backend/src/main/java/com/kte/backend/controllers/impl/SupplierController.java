@@ -46,7 +46,7 @@ public class SupplierController implements UISupplierController {
 
     @Override
     @GetMapping
-    public ResponseEntity<PageResponse<SupplierResponse>> getAllSuppliers(Pageable pageable) {
+    public ResponseEntity<PageResponse<SupplierResponse>> getAllSuppliers(final Pageable pageable) {
         PageResponse<SupplierResponse> suppliers = supplierService.findAll(pageable);
         log.debug("Received request to get all suppliers with pageable: {}", pageable);
         return ResponseEntity.ok(suppliers);
