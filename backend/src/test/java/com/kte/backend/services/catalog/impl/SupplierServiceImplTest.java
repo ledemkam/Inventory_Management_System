@@ -4,7 +4,6 @@ import com.kte.backend.common.PageResponse;
 import com.kte.backend.mapper.SupplierMapper;
 import com.kte.backend.models.dto.request.SupplierRequest;
 import com.kte.backend.models.dto.response.SupplierResponse;
-import com.kte.backend.models.entity.Category;
 import com.kte.backend.models.entity.Supplier;
 import com.kte.backend.repository.SupplierRepository;
 import com.kte.backend.validator.SupplierValidator;
@@ -24,7 +23,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+
 import static org.mockito.Mockito.*;
 
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
