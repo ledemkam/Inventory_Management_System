@@ -1,8 +1,10 @@
 package com.kte.backend.services.catalog.impl;
 
+import com.kte.backend.common.PageResponse;
 import com.kte.backend.mapper.SupplierMapper;
 import com.kte.backend.models.dto.request.SupplierRequest;
 import com.kte.backend.models.dto.response.SupplierResponse;
+import com.kte.backend.models.entity.Category;
 import com.kte.backend.models.entity.Supplier;
 import com.kte.backend.repository.SupplierRepository;
 import com.kte.backend.validator.SupplierValidator;
@@ -13,7 +15,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -60,15 +68,46 @@ class SupplierServiceImplTest {
 
     @Test
     @DisplayName("should create supplier when it does not exist")
-    void should_create_supplier_when_exist() {
+    void should_create_supplier_when_no_exist() {
         //Given
         when(supplierMapper.dtoToEntity(supplierRequest)).thenReturn(supplier);
         when(supplierRepository.save(supplier)).thenReturn(supplier);
         when(supplierMapper.entityToDto(supplier)).thenReturn(supplierResponse);
         doNothing().when(supplierValidator).checkSupplierAlreadyExistsByName(supplierRequest.name());
 
+
         //When
         SupplierResponse response = supplierService.create(supplierRequest);
+
+        //Then
+        assertThat(response).isNotNull();
+    }
+
+
+    @Test
+    @DisplayName("should update supplier when it exists")
+    void should_Update_supplier_when_it_exists() {
+        //Given
+        when(supplierValidator.findSupplierOrThrow(supplier.getId())).thenReturn(supplier);
+        when(supplierMapper.dtoToEntity(supplierRequest)).thenReturn(supplier);
+        when(supplierRepository.save(supplier)).thenReturn(supplier);
+        when(supplierMapper.entityToDto(supplier)).thenReturn(supplierResponse);
+        //When
+        SupplierResponse response = supplierService.update(supplier.getId(), supplierRequest);
+        //Then
+        assertThat(response).isNotNull();
+    }
+
+    @Test
+    @DisplayName("should find all suppliers")
+    void should_find_All_suppliers() {
+        //Given
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Supplier> supplierPage = new PageImpl<>(List.of(supplier), pageable, 1);
+        when(supplierRepository.findAll(pageable)).thenReturn(supplierPage);
+        when(supplierMapper.entityToDto(supplier)).thenReturn(supplierResponse);
+        //When
+        PageResponse<SupplierResponse> response = supplierService.findAll(pageable);
 
         //Then
         assertThat(response).isNotNull();
