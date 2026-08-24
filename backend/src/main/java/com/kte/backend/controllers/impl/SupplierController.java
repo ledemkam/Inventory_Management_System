@@ -24,36 +24,46 @@ public class SupplierController implements UISupplierController {
 
     @Override
     @PostMapping
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<SupplierResponse> createSupplier(@Valid @RequestBody final SupplierRequest request) {
+        log.info("Received request to create supplier with request: {}", request);
         SupplierResponse createdSupplier = supplierService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSupplier);
     }
 
     @Override
     @PutMapping("/{supplier-id}")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<SupplierResponse> updateSupplier(
             @PathVariable("supplier-id")
             @Valid final String id,
             @RequestBody final SupplierRequest supplierRequest) {
+        log.info("Received request to update supplier with id: {} and request: {}", id, supplierRequest);
         SupplierResponse updatedSupplier = supplierService.update(id, supplierRequest);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedSupplier);
     }
 
 
     @Override
+    @GetMapping
     public ResponseEntity<PageResponse<SupplierResponse>> getAllSuppliers(Pageable pageable) {
-        return null;
+        PageResponse<SupplierResponse> suppliers = supplierService.findAll(pageable);
+        return ResponseEntity.ok(suppliers);
     }
 
     @Override
-    public ResponseEntity<SupplierResponse> getSupplierById(String id) {
-        return null;
+    @GetMapping("/{supplier-id}")
+    public ResponseEntity<SupplierResponse> getSupplierById(
+            @PathVariable("supplier-id") final String id) {
+        SupplierResponse supplier = supplierService.findById(id);
+        return ResponseEntity.ok(supplier);
     }
 
     @Override
-    public ResponseEntity<Void> deleteSupplier(String id) {
-        return null;
+    @DeleteMapping("/{supplier-id}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Void> deleteSupplier(@PathVariable("supplier-id") final String id) {
+        supplierService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
