@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,6 +74,11 @@ class SupplierControllerTest {
                 .name("Supplier_A")
                 .address("123 Main St")
                 .build();
+        updatedSupplierResponse = SupplierResponse.builder()
+                .id(supplierId)
+                .name("updated_Supplier_A")
+                .address("124 Main St")
+                .build();
     }
 
     @Test
@@ -93,5 +99,25 @@ class SupplierControllerTest {
                 .andExpect(jsonPath("$.name", is("Supplier_A")))
                 .andExpect(jsonPath("$.address", is("123 Main St")));
 
+    }
+
+    @Test
+    @DisplayName("should return updated supplier")
+    @WithMockUser(roles = "MANAGER")
+    void should_Return_Update_Supplier() throws Exception {
+        String supplierId = "1";
+        when(supplierService.update(supplierId, supplierRequest)).thenReturn(updatedSupplierResponse);
+        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
+        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("MANAGER");
+        //WHEN & THEN
+        mockMvc.perform(put("/api/v1/suppliers/" + supplierId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(supplierRequest)))
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.id", is(supplierId)))
+                .andExpect(jsonPath("$.name", is("updated_Supplier_A")))
+                .andExpect(jsonPath("$.address", is("124 Main St")));
     }
 }
