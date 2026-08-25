@@ -165,4 +165,20 @@ class SupplierControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is("1")));
     }
+
+    @Test
+    @DisplayName("should delete supplier by id")
+    @WithMockUser(roles = "MANAGER")
+    void should_Delete_Supplier() throws Exception {
+        String supplierId = "1";
+        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("MANAGER");
+        //WHEN & THEN
+        mockMvc.perform(delete("/api/v1/suppliers/" + supplierId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                        .content(objectMapper.writeValueAsString(supplierResponse))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
 }
