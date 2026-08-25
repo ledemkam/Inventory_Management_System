@@ -138,6 +138,40 @@ class AuthenticationServiceImplTest {
     }
 
     @Test
+    @DisplayName("Should default to USER role when registering without an explicit role")
+    void should_register_user_with_default_USER_role_when_role_not_provided() {
+        final RegisterRequest registerRequest = RegisterRequest.builder()
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .password("plainPassword")
+                .phoneNumber("1234567890")
+                .build();
+
+        final User userToSave = User.builder().username("johndoe").build();
+        final User savedUser = User.builder().username("johndoe").role(UserRole.USER).build();
+        final UserResponse expectedResponse = UserResponse.builder()
+                .id("1")
+                .username("johndoe")
+                .email("johndoe@example.com")
+                .phoneNumber("1234567890")
+                .role(UserRole.USER)
+                .build();
+
+        when(userRepository.existsByUsername(registerRequest.username())).thenReturn(false);
+        when(userRepository.existsByEmail(registerRequest.email())).thenReturn(false);
+        when(userMapper.dtoToEntity(registerRequest)).thenReturn(userToSave);
+        when(passwordEncoder.encode(registerRequest.password())).thenReturn("encodedPassword");
+        when(userRepository.save(userToSave)).thenReturn(savedUser);
+        when(userMapper.entityToDto(savedUser)).thenReturn(expectedResponse);
+
+        final UserResponse actualResponse = authenticationService.registerUser(registerRequest);
+
+        assertEquals(expectedResponse, actualResponse);
+        assertEquals(UserRole.USER, userToSave.getRole());
+        verify(userRepository).save(userToSave);
+    }
+
+    @Test
     @DisplayName("Should not register user when user already exists")
     void should_register_User_when_user_exist() {
         final RegisterRequest registerRequest = RegisterRequest.builder()

@@ -1,9 +1,8 @@
 package com.kte.backend.controllers;
 
-
 import com.kte.backend.common.PageResponse;
-import com.kte.backend.models.dto.request.CategoryRequest;
-import com.kte.backend.models.dto.response.CategoryResponse;
+import com.kte.backend.models.dto.request.SupplierRequest;
+import com.kte.backend.models.dto.response.SupplierResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,15 +14,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "Category Controller", description = "Endpoints for managing categories")
-public interface UICategoryController {
+@Tag(name = "Supplier Controller", description = "Endpoints for managing suppliers")
+public interface UISupplierController {
 
-    @Operation(summary = "Create Category")
+    @Operation(summary = "Create Supplier")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Created"),
             @ApiResponse(responseCode = "400", description = "Bad Request",
                     content = @Content(schema = @Schema(implementation = Error.class))),
-            @ApiResponse(responseCode = "409", description = "Conflict - Category already exists",
+            @ApiResponse(responseCode = "409", description = "Conflict - Supplier already exists",
                     content = @Content(schema = @Schema(implementation = Error.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content(schema = @Schema(implementation = Error.class))),
@@ -32,9 +31,9 @@ public interface UICategoryController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = Error.class))),
     })
-    ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody final CategoryRequest request);
+    ResponseEntity<SupplierResponse> createSupplier(@Valid @RequestBody final SupplierRequest request);
 
-    @Operation(summary = "Update Category")
+    @Operation(summary = "Update Supplier")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request",
@@ -48,10 +47,10 @@ public interface UICategoryController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = Error.class))),
     })
-    ResponseEntity<CategoryResponse> updateCategory(final String id,
-                                                    @Valid @RequestBody final CategoryRequest categoryRequest);
+    ResponseEntity<SupplierResponse> updateSupplier(final String id,
+                                                    @Valid @RequestBody final SupplierRequest supplierRequest);
 
-    @Operation(summary = "Get all Categories")
+    @Operation(summary = "Get all Suppliers")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request",
@@ -63,9 +62,9 @@ public interface UICategoryController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = Error.class))),
     })
-    ResponseEntity<PageResponse<CategoryResponse>> getAllCategories(final Pageable pageable);
+    ResponseEntity<PageResponse<SupplierResponse>> getAllSuppliers(final Pageable pageable);
 
-    @Operation(summary = "Get Category By Id")
+    @Operation(summary = "Get Supplier By Id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request",
@@ -75,9 +74,9 @@ public interface UICategoryController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = Error.class))),
     })
-    ResponseEntity<CategoryResponse> getCategoryById(final String id);
+    ResponseEntity<SupplierResponse> getSupplierById(final String id);
 
-    @Operation(summary = "Delete Category")
+    @Operation(summary = "Delete Supplier")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No Content"),
             @ApiResponse(responseCode = "400", description = "Bad Request",
@@ -91,5 +90,5 @@ public interface UICategoryController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = Error.class))),
     })
-    ResponseEntity<Void> deleteCategory(final String id);
+    ResponseEntity<Void> deleteSupplier(final String id);
 }

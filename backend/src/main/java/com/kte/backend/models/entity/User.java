@@ -46,7 +46,12 @@ public class User extends AbstractEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.role.name()));
+        // Spring's hasRole()/hasAnyRole() expect a "ROLE_" prefix (see JwtAuthenticationFilter,
+        // which normalizes the JWT role claim the same way). This isn't currently exercised for
+        // authorization decisions - AuthenticationServiceImpl.login() reads role.name() directly
+        // rather than authentication.getAuthorities() - but keeping it prefixed avoids a latent
+        // mismatch if that ever changes.
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
     }
 
 

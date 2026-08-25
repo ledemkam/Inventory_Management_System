@@ -44,10 +44,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 final String role = jwtTokenService.getRoleFromToken(jwt);
 
                 if (role == null || role.isBlank()) {
-                    // UserRole only defines ADMIN/MANAGER - there is no generic fallback role in
-                    // this domain, so a token without a role claim can't be mapped to anything
-                    // @PreAuthorize checks understand. Treat it as an invalid token rather than
-                    // silently granting a phantom "ROLE_USER" authority.
+                    // Every persisted user has an explicit UserRole (ADMIN/MANAGER/USER), so a
+                    // token without a role claim is malformed/tampered rather than a legitimate
+                    // "no role" case. Treat it as an invalid token instead of guessing a default.
                     throw new AuthenticationEntryPointException("JWT token is missing the role claim");
                 }
 

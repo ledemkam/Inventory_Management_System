@@ -5,9 +5,6 @@ jwt:
 spring:
   application:
     name: backend
-  output:
-    ansi:
-      enabled: ALWAYS
   profiles:
     active:
       - development
@@ -16,8 +13,8 @@ spring:
 
   datasource:
     url: ${DB_URL}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -30,8 +27,8 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: validate
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -40,7 +37,7 @@ spring:
           batch_size: 20
         order_updates: true
         order_inserts: true
-    open-in-view: true
+    open-in-view: false
 
 
   # Flyway configuration for database migrations
@@ -65,39 +62,29 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,prometheus,metrics
+        include: health,info
   endpoint:
     health:
       show-details: never
 
-# Configuration logging for Development
+# Baseline logging; overridden per-profile (see application-development.yaml / application-production.yaml)
 logging:
   level:
     root: INFO
-    de0.backend.gartenmanagement: DEBUG
-    org.springframework.web: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.springframework.transaction: DEBUG
-    org.springframework.cache: TRACE
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.kte.backend: INFO
   pattern:
-    console: '%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr([%thread]){blue} %clr(%-5level){highlight} %clr(%logger{36}){cyan} - %msg%n'
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
     file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
-  include-application-group:
 
-  # Springdoc OpenAPI configuration
+  # Springdoc OpenAPI configuration - off by default, enabled explicitly in development
 springdoc:
   default-produces-media-type: application/json
   override-with-generic-response: false
   api-docs:
-    enabled: true
+    enabled: false
     path: /v3/api-docs
   swagger-ui:
-    enabled: true
+    enabled: false
     path: /swagger-ui.html
     operations-sorter: method
     tags-sorter: alpha
-
-
-
-

@@ -7,6 +7,7 @@ import com.kte.backend.models.dto.request.RegisterRequest;
 import com.kte.backend.models.dto.response.LoginResponse;
 import com.kte.backend.models.dto.response.UserResponse;
 import com.kte.backend.models.entity.User;
+import com.kte.backend.models.enums.UserRole;
 import com.kte.backend.repository.UserRepository;
 import com.kte.backend.security.JwtTokenService;
 import com.kte.backend.services.authentication.AuthenticationService;
@@ -67,11 +68,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     " already exists");
         }
 
-        if (registerRequest.role() == null) {
-            throw new IllegalArgumentException("Role must be provided");
-        }
-
         final User user = userMapper.dtoToEntity(registerRequest);
+        // USER is the safe default for self-registration when no role is explicitly requested;
+        // ADMIN/MANAGER remain assignable via an explicit role in the request.
+        user.setRole(registerRequest.role() != null ? registerRequest.role() : UserRole.USER);
         user.setPassword(passwordEncoder.encode(registerRequest.password()));
         final User savedUser = userRepository.save(user);
 

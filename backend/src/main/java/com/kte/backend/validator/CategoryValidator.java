@@ -1,4 +1,4 @@
-package com.kte.backend.Validator;
+package com.kte.backend.validator;
 
 import com.kte.backend.exception.EntityAlreadyExistsException;
 import com.kte.backend.exception.EntityNotFoundException;

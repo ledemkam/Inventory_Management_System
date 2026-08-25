@@ -37,6 +37,9 @@ public class UserController implements UIUserController {
 
     @Override
     @PutMapping("/{user-id}")
+    // ADMIN/MANAGER can update any account; anyone else can only update their own
+    // (the JWT principal name is the authenticated user's id - see JwtAuthenticationFilter).
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or #id == authentication.name")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable("user-id") final String id,
             @RequestBody @Valid UserRequest request) {
@@ -67,7 +70,8 @@ public class UserController implements UIUserController {
 
     @Override
     @DeleteMapping("/{user-id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    // ADMIN/MANAGER can delete any account; anyone else can only delete their own.
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or #id == authentication.name")
     public ResponseEntity<Void> deleteUser(@PathVariable("user-id") String id) {
         log.debug("Received request to delete user with user-id: {}", id);
         userService.deleteUser(id);

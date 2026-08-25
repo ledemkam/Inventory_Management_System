@@ -34,6 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -143,6 +144,63 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("should let a user update their own account")
+    void should_Update_Own_Account() throws Exception {
+        final UserRequest updateRequest = UserRequest.builder()
+                .username("updateduser")
+                .email("updated@example.com")
+                .password("Password123!")
+                .build();
+
+        final UserResponse updatedUser = UserResponse.builder()
+                .id("1")
+                .username(updateRequest.username())
+                .email(updateRequest.email())
+                .role(UserRole.USER)
+                .build();
+
+        when(userService.updateUser(eq("1"), any(UserRequest.class))).thenReturn(updatedUser);
+
+        // The caller's JWT subject ("1") matches the target user-id, so a plain USER should
+        // be allowed through even without ADMIN/MANAGER authority.
+        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("USER");
+
+        mockMvc.perform(put("/api/v1/users/{user-id}", "1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isAccepted());
+
+        verify(userService, times(1)).updateUser(eq("1"), any(UserRequest.class));
+    }
+
+    @Test
+    @DisplayName("should forbid a user from updating another account")
+    void should_Forbid_Updating_Another_Account() throws Exception {
+        final UserRequest updateRequest = UserRequest.builder()
+                .username("updateduser")
+                .email("updated@example.com")
+                .password("Password123!")
+                .build();
+
+        // The caller's JWT subject ("2") does not match the target user-id ("1"), and USER
+        // carries no ADMIN/MANAGER authority, so the request must be rejected.
+        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("2");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("USER");
+
+        mockMvc.perform(put("/api/v1/users/{user-id}", "1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isForbidden());
+
+        verify(userService, never()).updateUser(anyString(), any(UserRequest.class));
+    }
+
+    @Test
     @DisplayName("should return the current logged in user")
     @WithMockUser(roles = "ADMIN")
     void should_Return_Current_User() throws Exception {
@@ -235,5 +293,35 @@ class UserControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(userService, times(1)).deleteUser("1");
+    }
+
+    @Test
+    @DisplayName("should let a user delete their own account")
+    void should_Delete_Own_Account() throws Exception {
+        doNothing().when(userService).deleteUser("1");
+
+        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("USER");
+
+        mockMvc.perform(delete("/api/v1/users/{user-id}", "1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token"))
+                .andExpect(status().isNoContent());
+
+        verify(userService, times(1)).deleteUser("1");
+    }
+
+    @Test
+    @DisplayName("should forbid a user from deleting another account")
+    void should_Forbid_Deleting_Another_Account() throws Exception {
+        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("2");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("USER");
+
+        mockMvc.perform(delete("/api/v1/users/{user-id}", "1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token"))
+                .andExpect(status().isForbidden());
+
+        verify(userService, never()).deleteUser(anyString());
     }
 }

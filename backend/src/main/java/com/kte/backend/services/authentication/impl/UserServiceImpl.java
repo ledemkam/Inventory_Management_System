@@ -14,7 +14,9 @@ import com.kte.backend.services.authentication.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -58,6 +60,13 @@ public class UserServiceImpl implements UserService {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
 
+        // The controller's @PreAuthorize lets a user reach this method for their own account
+        // even without ADMIN/MANAGER authority (self-service profile edits). Without this guard
+        // that same self-service call could smuggle in a role change and self-promote to ADMIN.
+        if (userRequest.role() != null && !callerCanAssignRoles()) {
+            throw new AccessDeniedException("Only ADMIN or MANAGER can change a user's role");
+        }
+
         userMapper.updateEntityFromDto(userRequest, existingUser);
         if (userRequest.password() != null && !userRequest.password().isBlank()) {
             existingUser.setPassword(passwordEncoder.encode(userRequest.password()));
@@ -76,6 +85,16 @@ public class UserServiceImpl implements UserService {
         log.debug("Fetching transactions for user with id: {}", id);
         return PageResponse.of(transactionRepository.findAllByUser_Id(id, pageable)
                 .map(transactionMapper::entityToDto));
+    }
+
+    private boolean callerCanAssignRoles() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return false;
+        }
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(authority -> authority.equals("ROLE_ADMIN") || authority.equals("ROLE_MANAGER"));
     }
 
     @Override
