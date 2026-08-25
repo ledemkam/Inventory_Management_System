@@ -4,7 +4,7 @@ import com.kte.backend.common.PageResponse;
 import com.kte.backend.config.SecurityConfig;
 import com.kte.backend.mapper.SupplierMapper;
 import com.kte.backend.models.dto.request.SupplierRequest;
-import com.kte.backend.models.dto.response.CategoryResponse;
+
 import com.kte.backend.models.dto.response.SupplierResponse;
 import com.kte.backend.models.entity.Supplier;
 import com.kte.backend.security.JwtTokenService;
