@@ -152,4 +152,17 @@ class SupplierControllerTest {
                 .andExpect(jsonPath("$.content[0].name", is("Supplier_A")))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("should return supplier by id")
+    void should_Return_Supplier_By_Id() throws Exception {
+        String supplierId = "1";
+        when(supplierService.findById(supplierId)).thenReturn(supplierResponse);
+        //WHEN & THEN
+        mockMvc.perform(get("/api/v1/suppliers/" + supplierId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(supplierResponse)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is("1")));
+    }
 }
