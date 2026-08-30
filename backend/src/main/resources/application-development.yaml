@@ -1,5 +1,5 @@
-# Local development overrides. Active by default (see spring.profiles.active
-# in application.yaml) so `mvn spring-boot:run` / IDE runs work out of the box.
+# Local development overrides. Active by default (spring.profiles.active in application.yaml)
+# so `mvn spring-boot:run` / IDE runs work out of the box.
 # Real deployments MUST set SPRING_PROFILES_ACTIVE=production to avoid these
 # convenience-oriented, insecure-by-design settings.
 spring:
@@ -8,6 +8,7 @@ spring:
       enabled: ALWAYS
 
   datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/inventory}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
 
@@ -17,11 +18,19 @@ spring:
     show-sql: true
     open-in-view: true
 
+# Dev-only fallback secret so local runs work without extra setup. NEVER used in production.
+jwt:
+  secret: ${JWT_SECRET:dev-only-insecure-secret-change-me-0123456789abcdef}
+  expiration: ${JWT_EXPIRATION:86400000}
+
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,prometheus,metrics
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
 
 logging:
   level:
