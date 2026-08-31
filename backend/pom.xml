@@ -158,6 +158,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
+        <!-- AOP / AspectJ (renamed from spring-boot-starter-aop in Spring Boot 4) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aspectj</artifactId>
+        </dependency>
         <!--mapstruct -->
         <dependency>
             <groupId>org.mapstruct</groupId>
