@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 
@@ -87,7 +88,7 @@ class CategoryServiceImplTest {
     @DisplayName("Test update method")
     void should_update_category_when_exist() {
         //GIVEN
-        when(categoryValidator.findCategoryOrThrow(category.getId())).thenReturn(category);
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         doNothing().when(categoryMapper).updateEntityFromDto(categoryRequest, category);
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
         when(categoryMapper.entityToDto(any(Category.class))).thenReturn(categoryResponse);
@@ -136,7 +137,7 @@ class CategoryServiceImplTest {
     @DisplayName("Test findById method")
     void should_find_category_By_Id() {
         //GIVEN
-        when(categoryValidator.findCategoryOrThrow(category.getId())).thenReturn(category);
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(categoryMapper.entityToDto(category)).thenReturn(categoryResponse);
 
         //WHEN
@@ -152,7 +153,7 @@ class CategoryServiceImplTest {
     @DisplayName("Test delete method")
     void should_delete_category_by_id() {
         //GIVEN
-        when(categoryValidator.findCategoryOrThrow(category.getId())).thenReturn(category);
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         doNothing().when(categoryRepository).delete(category);
 
         //WHEN

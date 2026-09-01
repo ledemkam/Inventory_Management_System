@@ -1,8 +1,6 @@
 package com.kte.backend.validator;
 
 import com.kte.backend.exception.EntityAlreadyExistsException;
-import com.kte.backend.exception.EntityNotFoundException;
-import com.kte.backend.models.entity.Category;
 import com.kte.backend.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,21 +25,6 @@ public class CategoryValidator {
                 .ifPresent(category -> {
                     log.error("Category with name {} already exists", name);
                     throw new EntityAlreadyExistsException(name);
-                });
-    }
-
-    /**
-     * Finds a category by its ID or throws an EntityNotFoundException if not found.
-     *
-     * @param id the ID of the category to find
-     * @return the found Category
-     * @throws EntityNotFoundException if no category with the given ID is found
-     */
-    public Category findCategoryOrThrow(final String id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Category with id {} not found", id);
-                    return new EntityNotFoundException("Category not found");
                 });
     }
 }
