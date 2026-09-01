@@ -2,10 +2,10 @@ package com.kte.backend.services.storage;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.kte.backend.common.ImageUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -21,9 +21,9 @@ public class CloudinaryFileStorageService implements FileStorageService {
     private final Cloudinary cloudinary;
 
     @Override
-    public String store(final MultipartFile file) {
+    public String store(final ImageUpload image) {
         try {
-            final Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+            final Map<?, ?> result = cloudinary.uploader().upload(image.content(), ObjectUtils.asMap(
                     "folder", UPLOAD_FOLDER,
                     "resource_type", "image"
             ));
