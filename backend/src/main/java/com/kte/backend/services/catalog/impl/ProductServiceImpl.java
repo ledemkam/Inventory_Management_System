@@ -46,22 +46,31 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public ProductResponse update(String s, ProductRequest request) {
+    public ProductResponse update(final String id, final ProductRequest request) {
+        final Product entity = productValidator.findProductOrThrow(id);
+        final Category category = categoryService.findCategoryOrThrow(request.categoryId());
+
+        productMapper.updateEntityFromDto(request, entity);
+        entity.setCategory(category);
+        applyImageIfPresent(entity, request.image());
+
+        log.info("Updating product with id: {}", entity.getId());
+        final Product updatedEntity = productRepository.save(entity);
+        return productMapper.entityToDto(updatedEntity);
+    }
+
+    @Override
+    public PageResponse<ProductResponse> findAll(final Pageable pageable) {
         return null;
     }
 
     @Override
-    public PageResponse<ProductResponse> findAll(Pageable pageable) {
+    public ProductResponse findById(final String id) {
         return null;
     }
 
     @Override
-    public ProductResponse findById(String s) {
-        return null;
-    }
-
-    @Override
-    public void delete(String s) {
+    public void delete(final String id) {
 
     }
 
