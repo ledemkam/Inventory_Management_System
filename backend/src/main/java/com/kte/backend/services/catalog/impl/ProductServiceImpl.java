@@ -61,17 +61,23 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PageResponse<ProductResponse> findAll(final Pageable pageable) {
-        return null;
+        log.debug("Fetching all products with pagination: page {}, size {}", pageable.getPageNumber(),
+                pageable.getPageSize());
+        return PageResponse.of(productRepository.findAll(pageable).map(productMapper::entityToDto));
     }
 
     @Override
     public ProductResponse findById(final String id) {
-        return null;
+        log.debug("Fetching product with id: {}", id);
+        final Product entity = productValidator.findProductOrThrow(id);
+        return productMapper.entityToDto(entity);
     }
 
     @Override
     public void delete(final String id) {
-
+        log.info("Deleting product with id: {}", id);
+        final Product entity = productValidator.findProductOrThrow(id);
+        productRepository.delete(entity);
     }
 
 
