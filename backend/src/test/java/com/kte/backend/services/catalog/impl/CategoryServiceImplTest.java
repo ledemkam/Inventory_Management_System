@@ -22,12 +22,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
-
-import static org.mockito.Mockito.when;
 
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
 @DisplayName("CategoryServiceImpl Unit Tests")
@@ -161,6 +159,7 @@ class CategoryServiceImplTest {
 
         //THEN
         assertThat(categoryService).isNotNull();
+        verify(categoryRepository, times(1)).delete(category);
     }
 
 
