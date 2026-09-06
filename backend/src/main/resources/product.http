@@ -1,0 +1,73 @@
+### Create product (sans image)
+POST http://localhost:8080/api/v1/products
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjMxZGI1OC0wMGNjLTQ1MGMtYWU1Zi1iY2MwYTI3N2IxMTEiLCJyb2xlIjoiTUFOQUdFUiIsImlhdCI6MTc4ODY5MTE2OCwiZXhwIjoxNzg4Nzc3NTY4fQ.pld8hu-Ottl61RnRcKUUkcv0SSS58lvQUhYcRoVdmpk
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="product"
+Content-Type: application/json
+
+{
+  "name": "Product 2",
+  "sku": "SKU-002",
+  "price": 11.99,
+  "stockQuantity": 102,
+  "description": "This is product 2",
+  "categoryId": "7b78b408-ed5d-43b9-a793-30cbbd630f5b"
+}
+--WebAppBoundary--
+
+### Create product (avec image)
+POST http://localhost:8080/api/v1/products
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjMxZGI1OC0wMGNjLTQ1MGMtYWU1Zi1iY2MwYTI3N2IxMTEiLCJyb2xlIjoiTUFOQUdFUiIsImlhdCI6MTc4ODY5MTE2OCwiZXhwIjoxNzg4Nzc3NTY4fQ.pld8hu-Ottl61RnRcKUUkcv0SSS58lvQUhYcRoVdmpk
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="product"
+Content-Type: application/json
+
+{
+  "name": "Product 2",
+  "sku": "SKU-002",
+  "price": 24.50,
+  "stockQuantity": 50,
+  "description": "This is product 2",
+  "categoryId": "REMPLACER_PAR_UN_ID_DE_CATEGORIE_EXISTANT"
+}
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="product2.png"
+Content-Type: image/png
+
+< ./images/product2.png
+--WebAppBoundary--
+
+###
+
+GET http://localhost:8080/api/v1/products
+
+### Get product by ID
+GET http://localhost:8080/api/v1/products/1c3e4825-4d70-4495-8101-e1391c377364
+
+### Update product
+PUT http://localhost:8080/api/v1/products/1c3e4825-4d70-4495-8101-e1391c377364
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjMxZGI1OC0wMGNjLTQ1MGMtYWU1Zi1iY2MwYTI3N2IxMTEiLCJyb2xlIjoiTUFOQUdFUiIsImlhdCI6MTc4ODY5MTE2OCwiZXhwIjoxNzg4Nzc3NTY4fQ.pld8hu-Ottl61RnRcKUUkcv0SSS58lvQUhYcRoVdmpk
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="product"
+Content-Type: application/json
+
+{
+  "name": "Product updated",
+  "sku": "SKU-0022",
+  "price": 12.99,
+  "stockQuantity": 102,
+  "description": "This is product updated",
+  "categoryId": "7b78b408-ed5d-43b9-a793-30cbbd630f5b"
+}
+
+###Delete product
+DELETE http://localhost:8080/api/v1/products/1c3e4825-4d70-4495-8101-e1391c377364
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjMxZGI1OC0wMGNjLTQ1MGMtYWU1Zi1iY2MwYTI3N2IxMTEiLCJyb2xlIjoiTUFOQUdFUiIsImlhdCI6MTc4ODY5MTE2OCwiZXhwIjoxNzg4Nzc3NTY4fQ.pld8hu-Ottl61RnRcKUUkcv0SSS58lvQUhYcRoVdmpk
+
+
