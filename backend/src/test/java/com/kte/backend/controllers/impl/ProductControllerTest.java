@@ -1,5 +1,6 @@
 package com.kte.backend.controllers.impl;
 
+import com.kte.backend.common.PageResponse;
 import com.kte.backend.config.SecurityConfig;
 import com.kte.backend.mapper.ProductMapper;
 import com.kte.backend.models.dto.request.ProductRequest;
@@ -25,7 +26,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -167,14 +172,39 @@ class ProductControllerTest {
     }
 
     @Test
-    void getAllProducts() throws Exception {
+    @DisplayName("should return all products")
+    void should_Return_all_Products() throws Exception {
+        //Given
+        final PageResponse<ProductResponse> ProductResponsePageResponse = PageResponse.<ProductResponse>builder()
+                .content(List.of(productResponse))
+                .page(0)
+                .size(10)
+                .totalElements(1)
+                .totalPages(1)
+                .hasNext(false)
+                .hasPrevious(false)
+                .isFirst(true)
+                .isLast(true)
+                .build();
+        when(productService.findAll(any())).thenReturn(ProductResponsePageResponse);
+        //WHEN & THEN
+        mockMvc.perform(get("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ProductResponsePageResponse)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id", is("1")))
+                .andExpect(jsonPath("$.content[0].name", is("Compüter")))
+                .andExpect(status().isOk());
+
     }
 
     @Test
-    void getProductById() throws Exception {
+    void should_Return_Product_By_Id() throws Exception {
     }
 
     @Test
-    void deleteProduct() throws Exception {
+    @DisplayName("should delete product")
+    void should_Delete_Product() throws Exception {
     }
 }
