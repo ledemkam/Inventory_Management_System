@@ -1,7 +1,3 @@
-jwt:
-  secret: ${jwt.secret}
-  expiration: ${jwt.expiration}
-
 spring:
   application:
     name: backend
@@ -12,9 +8,6 @@ spring:
     type: simple
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -22,7 +15,6 @@ spring:
       idle-timeout: 30000
       connection-timeout: 20000
       max-lifetime: 1200000
-
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -39,6 +31,9 @@ spring:
         order_inserts: true
     open-in-view: false
 
+  sql:
+    init:
+      mode: never
 
   # Flyway configuration for database migrations
   flyway:
@@ -49,6 +44,16 @@ spring:
     schemas: public
     table: flyway_schema_history
     validate-on-migrate: true
+    clean-disabled: false
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
 
 server:
   port: ${SERVER_PORT:8080}
@@ -57,7 +62,7 @@ server:
     min-response-size: 1024
     excluded-media-types: image/png,image/jpeg,image/gif,image/webp
 
-  #Actuator configuration for monitoring and
+# Actuator configuration for monitoring
 management:
   endpoints:
     web:
@@ -76,7 +81,7 @@ logging:
     console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
     file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
 
-  # Springdoc OpenAPI configuration - off by default, enabled explicitly in development
+# Springdoc OpenAPI configuration - off by default, enabled explicitly in development
 springdoc:
   default-produces-media-type: application/json
   override-with-generic-response: false

@@ -1,5 +1,7 @@
 package com.kte.backend.models.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kte.backend.common.ImageUpload;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -36,6 +38,14 @@ public record ProductRequest(
         LocalDateTime expiryDate,
 
         @NotBlank(message = "Category id is required")
-        String categoryId
+        String categoryId,
+
+        /**
+         * Image bytes uploaded alongside the request, set by the web layer from the
+         * multipart part. Not part of the JSON body; when absent, {@link #imageUrl()}
+         * is used as-is (e.g. an externally hosted image URL).
+         */
+        @JsonIgnore
+        ImageUpload image
 ) {
 }

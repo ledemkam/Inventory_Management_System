@@ -1,15 +1,21 @@
-# Production overrides. Must be selected explicitly:
-#   SPRING_PROFILES_ACTIVE=production
-# The base application.yaml is already hardened (ddl-auto: validate,
-# show-sql: false, swagger disabled, no credential fallbacks), so this file
-# only needs to state production-specific intent and lock down anything a
-# future change to the base/dev files could otherwise loosen by accident.
+# Production overrides. Selected explicitly via SPRING_PROFILES_ACTIVE=production.
+# The base application.yaml is already hardened (ddl-auto: validate, show-sql: false,
+# sql.init.mode: never, swagger disabled); this file only states production-specific
+# intent and locks down anything the base/dev files could loosen by accident.
 spring:
   jpa:
     hibernate:
       ddl-auto: validate
     show-sql: false
     open-in-view: false
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  flyway:
+    clean-disabled: true
 
 management:
   endpoints:
@@ -24,9 +30,3 @@ logging:
   level:
     root: WARN
     com.kte.backend: INFO
-
-springdoc:
-  api-docs:
-    enabled: false
-  swagger-ui:
-    enabled: false

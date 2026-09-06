@@ -5,19 +5,15 @@ import com.kte.backend.models.dto.response.SupplierResponse;
 import com.kte.backend.models.entity.Supplier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
 @DisplayName("SupplierMapper Test")
 class SupplierMapperTest {
 
-    @Autowired
-    private SupplierMapper supplierMapper;
+    private final SupplierMapper supplierMapper = new SupplierMapperImpl();
 
     @Test
     @DisplayName("Test entity to DTO mapping")

@@ -5,19 +5,15 @@ import com.kte.backend.models.dto.response.CategoryResponse;
 import com.kte.backend.models.entity.Category;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
 @DisplayName("CategoryMapper Test")
 class CategoryMapperTest {
 
-    @Autowired
-    private CategoryMapper categoryMapper;
+    private final CategoryMapper categoryMapper = new CategoryMapperImpl();
 
 
     @Test

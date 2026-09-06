@@ -2,6 +2,7 @@ package com.kte.backend.services.catalog.impl;
 
 import com.kte.backend.validator.CategoryValidator;
 import com.kte.backend.common.PageResponse;
+import com.kte.backend.exception.EntityNotFoundException;
 import com.kte.backend.mapper.CategoryMapper;
 import com.kte.backend.models.dto.request.CategoryRequest;
 import com.kte.backend.models.dto.response.CategoryResponse;
@@ -38,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse update(final String id, final CategoryRequest request) {
         log.info("Updating category with id: {}", id);
-        final Category entity = categoryValidator.findCategoryOrThrow(id);
+        final Category entity = findCategoryOrThrow(id);
         categoryMapper.updateEntityFromDto(request, entity);
         final Category updatedEntity = categoryRepository.save(entity);
         return categoryMapper.entityToDto(updatedEntity);
@@ -53,17 +54,25 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse findById(final String id) {
-        final Category entity = categoryValidator.findCategoryOrThrow(id);
+        final Category entity = findCategoryOrThrow(id);
         log.info("Found category with id: {}", entity.getId());
         return categoryMapper.entityToDto(entity);
     }
 
     @Override
     public void delete(final String id) {
-        final Category entity = categoryValidator.findCategoryOrThrow(id);
+        final Category entity = findCategoryOrThrow(id);
         log.info("Deleting category with id: {}", entity.getId());
         categoryRepository.delete(entity);
     }
 
+    @Override
+    public Category findCategoryOrThrow(final String id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Category with id {} not found", id);
+                    return new EntityNotFoundException("Category not found");
+                });
+    }
 
 }

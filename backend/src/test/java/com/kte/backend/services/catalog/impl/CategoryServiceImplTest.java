@@ -22,11 +22,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
-
-import static org.mockito.Mockito.when;
+import java.util.Optional;
 
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
 @DisplayName("CategoryServiceImpl Unit Tests")
@@ -87,7 +86,7 @@ class CategoryServiceImplTest {
     @DisplayName("Test update method")
     void should_update_category_when_exist() {
         //GIVEN
-        when(categoryValidator.findCategoryOrThrow(category.getId())).thenReturn(category);
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         doNothing().when(categoryMapper).updateEntityFromDto(categoryRequest, category);
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
         when(categoryMapper.entityToDto(any(Category.class))).thenReturn(categoryResponse);
@@ -136,7 +135,7 @@ class CategoryServiceImplTest {
     @DisplayName("Test findById method")
     void should_find_category_By_Id() {
         //GIVEN
-        when(categoryValidator.findCategoryOrThrow(category.getId())).thenReturn(category);
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(categoryMapper.entityToDto(category)).thenReturn(categoryResponse);
 
         //WHEN
@@ -152,7 +151,7 @@ class CategoryServiceImplTest {
     @DisplayName("Test delete method")
     void should_delete_category_by_id() {
         //GIVEN
-        when(categoryValidator.findCategoryOrThrow(category.getId())).thenReturn(category);
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         doNothing().when(categoryRepository).delete(category);
 
         //WHEN
@@ -160,6 +159,7 @@ class CategoryServiceImplTest {
 
         //THEN
         assertThat(categoryService).isNotNull();
+        verify(categoryRepository, times(1)).delete(category);
     }
 
 

@@ -7,19 +7,15 @@ import com.kte.backend.models.entity.User;
 import com.kte.backend.models.enums.UserRole;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
 @DisplayName("UserMapper Test")
 class UserMapperTest {
 
-    @Autowired
-    private UserMapper userMapper;
+    private final UserMapper userMapper = new UserMapperImpl();
 
     @Test
     @DisplayName("Test entity to DTO mapping")
