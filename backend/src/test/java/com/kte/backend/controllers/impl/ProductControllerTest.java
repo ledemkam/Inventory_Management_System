@@ -6,7 +6,6 @@ import com.kte.backend.mapper.ProductMapper;
 import com.kte.backend.models.dto.request.ProductRequest;
 import com.kte.backend.models.dto.response.CategoryResponse;
 import com.kte.backend.models.dto.response.ProductResponse;
-import com.kte.backend.models.entity.Product;
 import com.kte.backend.security.JwtTokenService;
 import com.kte.backend.services.catalog.ProductService;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +31,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -200,11 +200,30 @@ class ProductControllerTest {
     }
 
     @Test
+    @DisplayName("should return product by id")
     void should_Return_Product_By_Id() throws Exception {
+        String productId = "1";
+        when(productService.findById(productId)).thenReturn(productResponse);
+        //WHEN & THEN
+        mockMvc.perform(get("/api/v1/products/" + productId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(productResponse)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is("1")));
     }
 
     @Test
     @DisplayName("should delete product")
+    @WithMockUser(roles = "MANAGER")
     void should_Delete_Product() throws Exception {
+        String productId = "1";
+        doNothing().when(productService).delete(productId);
+        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("MANAGER");
+        //WHEN & THEN
+        mockMvc.perform(delete("/api/v1/products/" + productId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token"))
+                .andExpect(status().isNoContent());
     }
 }
