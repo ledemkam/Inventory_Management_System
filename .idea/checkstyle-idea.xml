@@ -10,7 +10,7 @@
     <option name="locations">
       <list>
         <ConfigurationLocation id="bundled-sun-checks" type="BUNDLED" scope="All" description="Sun Checks">
-          (bundled)
+          bundled-sun-checks
           <option name="properties">
             <map>
               <entry key="org.checkstyle.sun.suppressionfilter.config" value="checkstyle-suppressions.xml" />
@@ -19,7 +19,7 @@
           </option>
         </ConfigurationLocation>
         <ConfigurationLocation id="bundled-google-checks" type="BUNDLED" scope="All" description="Google Checks">
-          (bundled)
+          bundled-google-checks
           <option name="properties">
             <map>
               <entry key="org.checkstyle.google.severity" value="warning" />

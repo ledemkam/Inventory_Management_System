@@ -5,7 +5,6 @@ import com.kte.backend.mapper.ProductMapper;
 import com.kte.backend.models.dto.request.ProductRequest;
 import com.kte.backend.models.dto.response.CategoryResponse;
 import com.kte.backend.models.dto.response.ProductResponse;
-import com.kte.backend.models.entity.Category;
 import com.kte.backend.models.entity.Product;
 import com.kte.backend.security.JwtTokenService;
 import com.kte.backend.services.catalog.ProductService;
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +53,6 @@ class ProductControllerTest {
     private ObjectMapper objectMapper;
 
 
-    private Product product;
-    private Category category;
     private ProductRequest productRequest;
     private ProductResponse productResponse;
     private ProductResponse updatedProductResponse;
@@ -63,21 +61,6 @@ class ProductControllerTest {
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
-        category = Category.builder()
-                .id("1")
-                .name("Electronics")
-                .build();
-
-        product = Product.builder()
-                .id("1")
-                .name("Compüter")
-                .sku("COMP123")
-                .price(new BigDecimal("999.99"))
-                .category(category)
-                .description("A high-end computer")
-                .imageUrl(null)
-                .stockQuantity(10)
-                .build();
 
         productRequest = ProductRequest.builder()
                 .name("Compüter")
@@ -104,6 +87,17 @@ class ProductControllerTest {
                 .imageUrl(null)
                 .stockQuantity(10)
                 .build();
+
+        updatedProductResponse = ProductResponse.builder()
+                .id("1")
+                .name("Fernsehen")
+                .sku("TV456")
+                .price(new BigDecimal("499.99"))
+                .category(c)
+                .description("smart TV")
+                .imageUrl(null)
+                .stockQuantity(12)
+                .build();
     }
 
     @Test
@@ -123,7 +117,7 @@ class ProductControllerTest {
                 objectMapper.writeValueAsBytes(productRequest));
 
         //When & Then
-        mockMvc.perform(multipart("/api/v1/products")
+        mockMvc.perform(multipart(HttpMethod.POST, "/api/v1/products")
                         .file(productPart)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
                         .contentType(MediaType.MULTIPART_FORM_DATA))
@@ -140,18 +134,47 @@ class ProductControllerTest {
     }
 
     @Test
-    void updateProduct() {
+    @DisplayName("should return updated product")
+    @WithMockUser(roles = "MANAGER")
+    void should_Return_updating_Product() throws Exception {
+        //Given
+        when(productService.update("1", productRequest)).thenReturn(updatedProductResponse);
+        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
+        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("MANAGER");
+
+        MockMultipartFile productPart = new MockMultipartFile(
+                "product",
+                "product",
+                MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsBytes(productRequest));
+
+        //When & Then
+        mockMvc.perform(multipart(HttpMethod.PUT, "/api/v1/products/{product-id}", "1")
+                        .file(productPart)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.id").value("1"))
+                .andExpect(jsonPath("$.name").value("Fernsehen"))
+                .andExpect(jsonPath("$.sku").value("TV456"))
+                .andExpect(jsonPath("$.price").value(499.99))
+                .andExpect(jsonPath("$.category.id").value("1"))
+                .andExpect(jsonPath("$.category.name").value("Electronics"))
+                .andExpect(jsonPath("$.description").value("smart TV"))
+                .andExpect(jsonPath("$.imageUrl").doesNotExist())
+                .andExpect(jsonPath("$.stockQuantity").value(12));
     }
 
     @Test
-    void getAllProducts() {
+    void getAllProducts() throws Exception {
     }
 
     @Test
-    void getProductById() {
+    void getProductById() throws Exception {
     }
 
     @Test
-    void deleteProduct() {
+    void deleteProduct() throws Exception {
     }
 }
