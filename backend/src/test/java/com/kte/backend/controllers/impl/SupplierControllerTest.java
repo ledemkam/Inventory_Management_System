@@ -13,36 +13,29 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import java.util.List;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SupplierController.class)
-@AutoConfigureMockMvc
+@AutoConfigureRestTestClient
 @Import(SecurityConfig.class)
 @DisplayName("SupplierController Test")
 class SupplierControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private RestTestClient restTestClient;
 
     @MockitoBean
     private SupplierService supplierService;
@@ -53,8 +46,6 @@ class SupplierControllerTest {
     @MockitoBean
     private SupplierMapper supplierMapper;
 
-    private ObjectMapper objectMapper;
-
     private Supplier supplier;
     private SupplierResponse supplierResponse;
     private SupplierRequest supplierRequest;
@@ -62,7 +53,6 @@ class SupplierControllerTest {
 
     @BeforeEach
     void setUp() {
-        objectMapper = new ObjectMapper();
         String supplierId = "1";
 
         supplier = Supplier.builder()
@@ -89,46 +79,49 @@ class SupplierControllerTest {
     @Test
     @DisplayName("should return created supplier")
     @WithMockUser(roles = "MANAGER")
-    void should_Return_created_Supplier() throws Exception {
+    void should_Return_created_Supplier() {
         when(supplierService.create(supplierRequest)).thenReturn(supplierResponse);
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
         when(jwtTokenService.validateToken(anyString())).thenReturn(true);
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("MANAGER");
         //WHEN & THEN
-        mockMvc.perform(post("/api/v1/suppliers")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(supplierRequest)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is("1")))
-                .andExpect(jsonPath("$.name", is("Supplier_A")))
-                .andExpect(jsonPath("$.address", is("123 Main St")));
-
+        restTestClient.post().uri("/api/v1/suppliers")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(supplierRequest)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("1")
+                .jsonPath("$.name").isEqualTo("Supplier_A")
+                .jsonPath("$.address").isEqualTo("123 Main St");
     }
 
     @Test
     @DisplayName("should return updated supplier")
     @WithMockUser(roles = "MANAGER")
-    void should_Return_Update_Supplier() throws Exception {
+    void should_Return_Update_Supplier() {
         String supplierId = "1";
         when(supplierService.update(supplierId, supplierRequest)).thenReturn(updatedSupplierResponse);
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
         when(jwtTokenService.validateToken(anyString())).thenReturn(true);
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("MANAGER");
         //WHEN & THEN
-        mockMvc.perform(put("/api/v1/suppliers/" + supplierId)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(supplierRequest)))
-                .andExpect(status().isAccepted())
-                .andExpect(jsonPath("$.id", is(supplierId)))
-                .andExpect(jsonPath("$.name", is("updated_Supplier_A")))
-                .andExpect(jsonPath("$.address", is("124 Main St")));
+        restTestClient.put().uri("/api/v1/suppliers/" + supplierId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(supplierRequest)
+                .exchange()
+                .expectStatus().isAccepted()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(supplierId)
+                .jsonPath("$.name").isEqualTo("updated_Supplier_A")
+                .jsonPath("$.address").isEqualTo("124 Main St");
     }
 
     @Test
     @DisplayName("should return all suppliers")
-    void should_Return_All_Suppliers() throws Exception {
+    void should_Return_All_Suppliers() {
         //GIVEN
         final PageResponse<SupplierResponse> supplierResponsePageResponse = PageResponse.<SupplierResponse>builder()
                 .content(List.of(supplierResponse))
@@ -143,42 +136,42 @@ class SupplierControllerTest {
                 .build();
         when(supplierService.findAll(any())).thenReturn(supplierResponsePageResponse);
         //WHEN & THEN
-        mockMvc.perform(get("/api/v1/suppliers")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(supplierResponsePageResponse)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(1)))
-                .andExpect(jsonPath("$.content[0].id", is("1")))
-                .andExpect(jsonPath("$.content[0].name", is("Supplier_A")))
-                .andExpect(status().isOk());
+        restTestClient.get().uri("/api/v1/suppliers")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.content.length()").isEqualTo(1)
+                .jsonPath("$.content[0].id").isEqualTo("1")
+                .jsonPath("$.content[0].name").isEqualTo("Supplier_A");
     }
 
     @Test
     @DisplayName("should return supplier by id")
-    void should_Return_Supplier_By_Id() throws Exception {
+    void should_Return_Supplier_By_Id() {
         String supplierId = "1";
         when(supplierService.findById(supplierId)).thenReturn(supplierResponse);
         //WHEN & THEN
-        mockMvc.perform(get("/api/v1/suppliers/" + supplierId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(supplierResponse)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is("1")));
+        restTestClient.get().uri("/api/v1/suppliers/" + supplierId)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("1");
     }
 
     @Test
     @DisplayName("should delete supplier by id")
     @WithMockUser(roles = "MANAGER")
-    void should_Delete_Supplier() throws Exception {
+    void should_Delete_Supplier() {
         String supplierId = "1";
         when(jwtTokenService.validateToken(anyString())).thenReturn(true);
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("MANAGER");
         //WHEN & THEN
-        mockMvc.perform(delete("/api/v1/suppliers/" + supplierId)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
-                        .content(objectMapper.writeValueAsString(supplierResponse))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+        restTestClient.delete().uri("/api/v1/suppliers/" + supplierId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                .exchange()
+                .expectStatus().isNoContent();
     }
 }
