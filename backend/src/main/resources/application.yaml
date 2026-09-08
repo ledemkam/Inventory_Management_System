@@ -62,7 +62,10 @@ server:
     min-response-size: 1024
     excluded-media-types: image/png,image/jpeg,image/gif,image/webp
 
-# Actuator configuration for monitoring
+# Actuator + observability configuration for monitoring.
+# Tracing and metrics are exported over OTLP (OpenTelemetry). Endpoint, sampling rate and
+# metrics export are tuned per profile; see application-development.yaml / application-production.yaml.
+# Set OTEL_EXPORTER_OTLP_ENDPOINT to the base URL of a collector (default: local docker-compose stack).
 management:
   endpoints:
     web:
@@ -71,15 +74,37 @@ management:
   endpoint:
     health:
       show-details: never
+      probes:
+        enabled: true
+  tracing:
+    export:
+      enabled: ${MANAGEMENT_TRACING_ENABLED:true}
+    sampling:
+      probability: ${MANAGEMENT_TRACING_SAMPLING_PROBABILITY:0.1}
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}/v1/traces
+  otlp:
+    metrics:
+      export:
+        enabled: ${MANAGEMENT_OTLP_METRICS_ENABLED:false}
+        url: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}/v1/metrics
+        step: 30s
+  observations:
+    annotations:
+      enabled: true
 
-# Baseline logging; overridden per-profile (see application-development.yaml / application-production.yaml)
+# Baseline logging; overridden per-profile (see application-development.yaml / application-production.yaml).
+# [traceId,spanId] are populated by Micrometer Tracing so log lines correlate with exported traces.
 logging:
   level:
     root: INFO
     com.kte.backend: INFO
   pattern:
-    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
-    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{traceId:-},%X{spanId:-}] %-5level %logger{36} - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{traceId:-},%X{spanId:-}] %-5level %logger{36} - %msg%n'
 
 # Springdoc OpenAPI configuration - off by default, enabled explicitly in development
 springdoc:

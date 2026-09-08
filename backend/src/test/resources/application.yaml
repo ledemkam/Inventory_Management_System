@@ -51,4 +51,12 @@ management:
   endpoints:
     access:
       default: none
+  # No collector during tests: export nothing and start no exporters.
+  tracing:
+    export:
+      enabled: false
+  otlp:
+    metrics:
+      export:
+        enabled: false
 

@@ -27,10 +27,18 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,loggers
   endpoint:
     health:
       show-details: always
+  # Trace every request locally and push metrics to the docker-compose OTLP stack.
+  tracing:
+    sampling:
+      probability: 1.0
+  otlp:
+    metrics:
+      export:
+        enabled: true
 
 logging:
   level:
@@ -42,7 +50,7 @@ logging:
     org.springframework.cache: TRACE
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
   pattern:
-    console: '%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr([%thread]){blue} %clr(%-5level){highlight} %clr(%logger{36}){cyan} - %msg%n'
+    console: '%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr([%thread]){blue} %clr([%X{traceId:-},%X{spanId:-}]){yellow} %clr(%-5level){highlight} %clr(%logger{36}){cyan} - %msg%n'
 
 springdoc:
   api-docs:

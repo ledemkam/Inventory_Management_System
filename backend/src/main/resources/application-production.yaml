@@ -25,6 +25,15 @@ management:
   endpoint:
     health:
       show-details: never
+  # OTEL_EXPORTER_OTLP_ENDPOINT MUST point at the production collector.
+  # Keep sampling low to bound overhead and export cost; override via env if needed.
+  tracing:
+    sampling:
+      probability: ${MANAGEMENT_TRACING_SAMPLING_PROBABILITY:0.1}
+  otlp:
+    metrics:
+      export:
+        enabled: true
 
 logging:
   level:

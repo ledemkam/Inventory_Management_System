@@ -20,5 +20,25 @@ services:
     ports:
       - "8989:8080"
 
+  # All-in-one observability backend: OTLP receiver + Grafana Tempo (traces),
+  # Prometheus (metrics) and Loki (logs), fronted by Grafana.
+  # The backend app exports here via OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+  # (the default in application.yaml). Pin the tag for reproducible environments.
+  otel-lgtm:
+    image: grafana/otel-lgtm:latest
+    container_name: inventory-observability
+    restart: unless-stopped
+    ports:
+      - "3000:3000"   # Grafana UI  -> http://localhost:3000
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP HTTP receiver
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - otel-lgtm-data:/data
+
 volumes:
   postgres-data:
+  otel-lgtm-data:

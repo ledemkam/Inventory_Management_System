@@ -158,6 +158,22 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
+
+        <!-- Observability: distributed tracing + metrics exported over OTLP (OpenTelemetry).
+             Versions are managed by the Spring Boot dependency BOM. Actuator (declared above)
+             provides the Micrometer Observation infrastructure these bridges plug into. -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing-bridge-otel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-otlp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-otlp</artifactId>
+        </dependency>
         <!-- AOP / AspectJ (renamed from spring-boot-starter-aop in Spring Boot 4) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -219,6 +235,10 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-opentelemetry</artifactId>
         </dependency>
 
 
