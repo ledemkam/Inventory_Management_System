@@ -1,0 +1,64 @@
+package com.kte.backend.services.catalog.impl;
+
+
+import com.kte.backend.mapper.TransactionMapper;
+import com.kte.backend.models.dto.request.TransactionRequest;
+import com.kte.backend.models.dto.response.TransactionResponse;
+import com.kte.backend.models.entity.Product;
+import com.kte.backend.models.entity.Supplier;
+import com.kte.backend.models.entity.Transaction;
+import com.kte.backend.models.enums.TransactionType;
+import com.kte.backend.repository.TransactionRepository;
+import com.kte.backend.services.catalog.TransactionService;
+
+import com.kte.backend.factory.TransactionsFactory;
+import com.kte.backend.validator.ProductValidator;
+import com.kte.backend.validator.SupplierValidator;
+import com.kte.backend.validator.TransactionValidator;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.stereotype.Service;
+
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class TransactionServiceImpl implements TransactionService {
+
+    private final TransactionMapper transactionMapper;
+    private final ProductValidator productValidator;
+    private final SupplierValidator supplierValidator;
+    private final TransactionRepository transactionRepository;
+    private final TransactionsFactory transactionsFactory;
+    private final TransactionValidator transactionValidator;
+
+    /**
+     * Records a pending purchase from a supplier. Stock is increased on completion.
+     */
+    @Override
+    public TransactionResponse restockInventory(TransactionRequest transactionRequest) {
+        final int quantity = transactionValidator.requireQuantity(transactionRequest.quantity());
+        final Product product = productValidator.findProductOrThrow(transactionRequest.productId());
+        final Supplier supplier = supplierValidator.findSupplierOrThrow(
+                transactionValidator.requireSupplierId(transactionRequest));
+
+        final Transaction transaction = transactionsFactory.buildTransaction(
+                transactionRequest, product, supplier, quantity, TransactionType.PURCHASE);
+
+        log.info("Recorded PENDING purchase of {} units for product {} from supplier {}",
+                quantity, product.getId(), supplier.getId());
+        return transactionMapper.entityToDto(transactionRepository.save(transaction));
+    }
+
+//CRUD (from CrudServices)
+
+    @Override
+    public TransactionResponse create(TransactionRequest request) {
+        throw new UnsupportedOperationException(
+                "Use restockInventory, sell or returnToSupplier to create a transaction");
+    }
+
+}
