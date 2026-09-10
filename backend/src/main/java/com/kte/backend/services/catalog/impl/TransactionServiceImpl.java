@@ -1,6 +1,7 @@
 package com.kte.backend.services.catalog.impl;
 
 
+import com.kte.backend.common.PageResponse;
 import com.kte.backend.exception.NameValueRequiredException;
 import com.kte.backend.mapper.TransactionMapper;
 import com.kte.backend.models.dto.request.TransactionRequest;
@@ -20,6 +21,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -135,6 +137,25 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionResponse create(TransactionRequest request) {
         throw new UnsupportedOperationException(
                 "Use restockInventory, sell or returnToSupplier to create a transaction");
+    }
+
+    @Override
+    public TransactionResponse update(final String id, final TransactionRequest request) {
+        // Only the status of a transaction can change once recorded.
+        throw new UnsupportedOperationException("Use updateTransactionStatus to modify a transaction");
+    }
+
+    @Override
+    public PageResponse<TransactionResponse> findAll(final Pageable pageable) {
+        log.debug("Fetching all transactions with pagination: page {}, size {}",
+                pageable.getPageNumber(), pageable.getPageSize());
+        return PageResponse.of(transactionRepository.findAll(pageable).map(transactionMapper::entityToDto));
+    }
+
+    @Override
+    public TransactionResponse findById(final String id) {
+        log.debug("Fetching transaction with id: {}", id);
+        return transactionMapper.entityToDto(transactionValidator.findTransactionOrThrow(id));
     }
 
 }
