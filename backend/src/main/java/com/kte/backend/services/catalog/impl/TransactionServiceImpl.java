@@ -1,12 +1,14 @@
 package com.kte.backend.services.catalog.impl;
 
 
+import com.kte.backend.exception.NameValueRequiredException;
 import com.kte.backend.mapper.TransactionMapper;
 import com.kte.backend.models.dto.request.TransactionRequest;
 import com.kte.backend.models.dto.response.TransactionResponse;
 import com.kte.backend.models.entity.Product;
 import com.kte.backend.models.entity.Supplier;
 import com.kte.backend.models.entity.Transaction;
+import com.kte.backend.models.enums.TransactionStatus;
 import com.kte.backend.models.enums.TransactionType;
 import com.kte.backend.repository.TransactionRepository;
 import com.kte.backend.services.catalog.TransactionService;
@@ -83,6 +85,50 @@ public class TransactionServiceImpl implements TransactionService {
 
         log.info("Recorded PENDING return of {} units for product {} to supplier {}",
                 quantity, product.getId(), supplier.getId());
+        return transactionMapper.entityToDto(transactionRepository.save(transaction));
+    }
+
+    /**
+     * Moves a transaction through its lifecycle.
+     * <ul>
+     *     <li>-&gt; COMPLETED : applies the stock movement for the transaction type.</li>
+     *     <li>-&gt; CANCELED  : reverses the stock movement if it had already been completed.</li>
+     *     <li>-&gt; PENDING / PROCESSING : allowed only while the transaction is not yet completed.</li>
+     * </ul>
+     */
+    @Override
+    public TransactionResponse updateTransactionStatus(final Long transactionId,
+                                                       final TransactionStatus transactionStatus) {
+        if (transactionStatus == null) {
+            throw new NameValueRequiredException("Transaction status is required");
+        }
+
+        final Transaction transaction = transactionValidator.findTransactionOrThrow(String.valueOf(transactionId));
+        final TransactionStatus current = transaction.getStatus();
+
+        if (current == transactionStatus) {
+            return transactionMapper.entityToDto(transaction);
+        }
+        if (current == TransactionStatus.CANCELED) {
+            throw new NameValueRequiredException("A canceled transaction can no longer change status");
+        }
+
+        switch (transactionStatus) {
+            case COMPLETED -> transactionsFactory.applyStockMovement(transaction);
+            case CANCELED -> {
+                if (current == TransactionStatus.COMPLETED) {
+                    transactionsFactory.reverseStockMovement(transaction);
+                }
+            }
+            case PENDING, PROCESSING -> {
+                if (current == TransactionStatus.COMPLETED) {
+                    throw new NameValueRequiredException("A completed transaction cannot be reopened");
+                }
+            }
+        }
+
+        transaction.setStatus(transactionStatus);
+        log.info("Transaction {} moved from {} to {}", transaction.getId(), current, transactionStatus);
         return transactionMapper.entityToDto(transactionRepository.save(transaction));
     }
 

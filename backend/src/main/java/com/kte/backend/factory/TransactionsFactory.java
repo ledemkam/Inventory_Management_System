@@ -48,5 +48,48 @@ public class TransactionsFactory {
                 : "%s - %d x %s".formatted(type, quantity, product.getName());
     }
 
+    /**
+     * Applies the stock change a transaction represents (called when it is completed).
+     */
+    public void applyStockMovement(final Transaction transaction) {
+        final Product product = transaction.getProduct();
+        final int quantity = transaction.getTotalProducts();
+
+        switch (transaction.getTransactionType()) {
+            case PURCHASE -> product.setStockQuantity(currentStock(product) + quantity);
+            case SALE, RETURN_TO_SUPPLIER -> {
+                ensureSufficientStock(product, quantity);
+                product.setStockQuantity(currentStock(product) - quantity);
+            }
+        }
+        productRepository.save(product);
+    }
+
+    private void ensureSufficientStock(final Product product, final int quantity) {
+        final int available = currentStock(product);
+        if (available < quantity) {
+            throw new NameValueRequiredException(
+                    "Insufficient stock for product %s: available %d, requested %d"
+                            .formatted(product.getName(), available, quantity));
+        }
+    }
+
+    private int currentStock(final Product product) {
+        return product.getStockQuantity() == null ? 0 : product.getStockQuantity();
+    }
+
+    public void reverseStockMovement(final Transaction transaction) {
+        final Product product = transaction.getProduct();
+        final int quantity = transaction.getTotalProducts();
+
+        switch (transaction.getTransactionType()) {
+            case PURCHASE -> {
+                ensureSufficientStock(product, quantity);
+                product.setStockQuantity(currentStock(product) - quantity);
+            }
+            case SALE, RETURN_TO_SUPPLIER -> product.setStockQuantity(currentStock(product) + quantity);
+        }
+        productRepository.save(product);
+    }
 
 }
