@@ -1,11 +1,14 @@
 package com.kte.backend.validator;
 
 import com.kte.backend.exception.EntityNotFoundException;
+import com.kte.backend.exception.NameValueRequiredException;
+import com.kte.backend.models.dto.request.TransactionRequest;
 import com.kte.backend.models.entity.Transaction;
 import com.kte.backend.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 @RequiredArgsConstructor
@@ -27,5 +30,19 @@ public class TransactionValidator {
                     log.error("Transaction with id {} not found", id);
                     return new EntityNotFoundException("Transaction not found");
                 });
+    }
+
+    public int requireQuantity(final Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new NameValueRequiredException("Quantity must be a positive number");
+        }
+        return quantity;
+    }
+
+    public String requireSupplierId(final TransactionRequest request) {
+        if (!StringUtils.hasText(request.supplierId())) {
+            throw new NameValueRequiredException("Supplier id is required for this operation");
+        }
+        return request.supplierId();
     }
 }
