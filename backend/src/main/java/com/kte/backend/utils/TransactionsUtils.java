@@ -1,5 +1,6 @@
 package com.kte.backend.utils;
 
+import com.kte.backend.exception.NameValueRequiredException;
 import com.kte.backend.models.dto.request.TransactionRequest;
 import com.kte.backend.models.entity.Product;
 import com.kte.backend.models.entity.Supplier;
@@ -18,11 +19,11 @@ public class TransactionsUtils {
     private final UserService userService;
     private final ProductRepository productRepository;
 
-    private Transaction buildTransaction(final TransactionRequest request,
-                                         final Product product,
-                                         final Supplier supplier,
-                                         final int quantity,
-                                         final TransactionType type) {
+    public Transaction buildTransaction(final TransactionRequest request,
+                                        final Product product,
+                                        final Supplier supplier,
+                                        final int quantity,
+                                        final TransactionType type) {
         final BigDecimal unitPrice = product.getPrice() != null ? product.getPrice() : BigDecimal.ZERO;
         return Transaction.builder()
                 .totalProducts(quantity)
@@ -43,5 +44,12 @@ public class TransactionsUtils {
         return StringUtils.hasText(description)
                 ? description
                 : "%s - %d x %s".formatted(type, quantity, product.getName());
+    }
+
+    public int requireQuantity(final Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new NameValueRequiredException("Quantity must be a positive number");
+        }
+        return quantity;
     }
 }
