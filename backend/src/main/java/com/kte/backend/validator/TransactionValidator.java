@@ -34,23 +34,28 @@ public class TransactionValidator {
                 });
     }
 
-    public int requireQuantity(final Integer quantity) {
-        if (quantity == null || quantity <= 0) {
-            throw new NameValueRequiredException("Quantity must be a positive number");
-        }
-        return quantity;
+    /**
+     * Resolves the supplier for an operation that requires one, failing fast with a
+     * {@link NameValueRequiredException} when the request carries no supplier id.
+     */
+    public Supplier requireSupplier(final TransactionRequest request) {
+        return supplierValidator.findSupplierOrThrow(requireSupplierId(request));
     }
 
-    public String requireSupplierId(final TransactionRequest request) {
-        if (!StringUtils.hasText(request.supplierId())) {
-            throw new NameValueRequiredException("Supplier id is required for this operation");
-        }
-        return request.supplierId();
-    }
-
+    /**
+     * Resolves the supplier for an operation where it is optional, returning
+     * {@code null} when the request carries no supplier id.
+     */
     public Supplier resolveOptionalSupplier(final TransactionRequest request) {
         return StringUtils.hasText(request.supplierId())
                 ? supplierValidator.findSupplierOrThrow(request.supplierId())
                 : null;
+    }
+
+    private String requireSupplierId(final TransactionRequest request) {
+        if (!StringUtils.hasText(request.supplierId())) {
+            throw new NameValueRequiredException("Supplier id is required for this operation");
+        }
+        return request.supplierId();
     }
 }

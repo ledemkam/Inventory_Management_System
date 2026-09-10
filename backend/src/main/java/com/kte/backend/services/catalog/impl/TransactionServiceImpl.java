@@ -15,7 +15,6 @@ import com.kte.backend.services.catalog.TransactionService;
 
 import com.kte.backend.factory.TransactionsFactory;
 import com.kte.backend.validator.ProductValidator;
-import com.kte.backend.validator.SupplierValidator;
 import com.kte.backend.validator.TransactionValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionMapper transactionMapper;
     private final ProductValidator productValidator;
-    private final SupplierValidator supplierValidator;
     private final TransactionRepository transactionRepository;
     private final TransactionsFactory transactionsFactory;
     private final TransactionValidator transactionValidator;
@@ -42,10 +40,9 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public TransactionResponse restockInventory(TransactionRequest transactionRequest) {
-        final int quantity = transactionValidator.requireQuantity(transactionRequest.quantity());
+        final int quantity = transactionRequest.quantity();
         final Product product = productValidator.findProductOrThrow(transactionRequest.productId());
-        final Supplier supplier = supplierValidator.findSupplierOrThrow(
-                transactionValidator.requireSupplierId(transactionRequest));
+        final Supplier supplier = transactionValidator.requireSupplier(transactionRequest);
 
         final Transaction transaction = transactionsFactory.buildTransaction(
                 transactionRequest, product, supplier, quantity, TransactionType.PURCHASE);
@@ -60,7 +57,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public TransactionResponse sell(final TransactionRequest transactionRequest) {
-        final int quantity = transactionValidator.requireQuantity(transactionRequest.quantity());
+        final int quantity = transactionRequest.quantity();
         final Product product = productValidator.findProductOrThrow(transactionRequest.productId());
         final Supplier supplier = transactionValidator.resolveOptionalSupplier(transactionRequest);
 
@@ -76,9 +73,9 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public TransactionResponse returnToSupplier(final TransactionRequest transactionRequest) {
-        final int quantity = transactionValidator.requireQuantity(transactionRequest.quantity());
+        final int quantity = transactionRequest.quantity();
         final Product product = productValidator.findProductOrThrow(transactionRequest.productId());
-        final Supplier supplier = supplierValidator.findSupplierOrThrow(transactionValidator.requireSupplierId(transactionRequest));
+        final Supplier supplier = transactionValidator.requireSupplier(transactionRequest);
 
         final Transaction transaction = transactionsFactory.buildTransaction(
                 transactionRequest, product, supplier, quantity, TransactionType.RETURN_TO_SUPPLIER);
