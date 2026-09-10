@@ -53,6 +53,22 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionMapper.entityToDto(transactionRepository.save(transaction));
     }
 
+    /**
+     * Records a pending sale to a customer. Stock is decreased on completion.
+     */
+    @Override
+    public TransactionResponse sell(final TransactionRequest transactionRequest) {
+        final int quantity = transactionValidator.requireQuantity(transactionRequest.quantity());
+        final Product product = productValidator.findProductOrThrow(transactionRequest.productId());
+        final Supplier supplier = transactionValidator.resolveOptionalSupplier(transactionRequest);
+
+        final Transaction transaction = transactionsFactory.buildTransaction(
+                transactionRequest, product, supplier, quantity, TransactionType.SALE);
+
+        log.info("Recorded PENDING sale of {} units for product {}", quantity, product.getId());
+        return transactionMapper.entityToDto(transactionRepository.save(transaction));
+    }
+
 //CRUD (from CrudServices)
 
     @Override
