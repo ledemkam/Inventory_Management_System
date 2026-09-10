@@ -78,6 +78,9 @@ public class TransactionsFactory {
         return product.getStockQuantity() == null ? 0 : product.getStockQuantity();
     }
 
+    /**
+     * Undoes the stock change of an already completed transaction (called when it is canceled).
+     */
     public void reverseStockMovement(final Transaction transaction) {
         final Product product = transaction.getProduct();
         final int quantity = transaction.getTotalProducts();
