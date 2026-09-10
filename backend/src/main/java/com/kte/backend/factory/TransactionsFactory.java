@@ -1,4 +1,4 @@
-package com.kte.backend.utils;
+package com.kte.backend.factory;
 
 import com.kte.backend.exception.NameValueRequiredException;
 import com.kte.backend.models.dto.request.TransactionRequest;
@@ -10,12 +10,14 @@ import com.kte.backend.models.enums.TransactionType;
 import com.kte.backend.repository.ProductRepository;
 import com.kte.backend.services.authentication.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 
+@Component
 @RequiredArgsConstructor
-public class TransactionsUtils {
+public class TransactionsFactory {
     private final UserService userService;
     private final ProductRepository productRepository;
 
@@ -46,17 +48,5 @@ public class TransactionsUtils {
                 : "%s - %d x %s".formatted(type, quantity, product.getName());
     }
 
-    public int requireQuantity(final Integer quantity) {
-        if (quantity == null || quantity <= 0) {
-            throw new NameValueRequiredException("Quantity must be a positive number");
-        }
-        return quantity;
-    }
 
-    public String requireSupplierId(final TransactionRequest request) {
-        if (!StringUtils.hasText(request.supplierId())) {
-            throw new NameValueRequiredException("Supplier id is required for this operation");
-        }
-        return request.supplierId();
-    }
 }
