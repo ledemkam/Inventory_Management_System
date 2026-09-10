@@ -52,4 +52,11 @@ public class TransactionsUtils {
         }
         return quantity;
     }
+
+    public String requireSupplierId(final TransactionRequest request) {
+        if (!StringUtils.hasText(request.supplierId())) {
+            throw new NameValueRequiredException("Supplier id is required for this operation");
+        }
+        return request.supplierId();
+    }
 }
