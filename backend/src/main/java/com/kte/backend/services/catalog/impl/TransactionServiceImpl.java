@@ -158,4 +158,10 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionMapper.entityToDto(transactionValidator.findTransactionOrThrow(id));
     }
 
+    @Override
+    public void delete(final String id) {
+        log.info("Deleting transaction with id: {}", id);
+        transactionRepository.delete(transactionValidator.findTransactionOrThrow(id));
+    }
+
 }
