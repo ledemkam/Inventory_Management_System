@@ -5,4 +5,6 @@ import com.kte.backend.models.dto.response.SupplierResponse;
 import com.kte.backend.services.CrudServices;
 
 public interface SupplierService extends CrudServices<SupplierRequest, SupplierResponse, String> {
+
+
 }
