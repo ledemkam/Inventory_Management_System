@@ -31,14 +31,7 @@ management:
   endpoint:
     health:
       show-details: always
-  # Trace every request locally and push metrics to the docker-compose OTLP stack.
-  tracing:
-    sampling:
-      probability: 1.0
-  otlp:
-    metrics:
-      export:
-        enabled: true
+
 
 logging:
   level:
