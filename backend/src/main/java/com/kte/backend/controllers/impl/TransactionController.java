@@ -44,8 +44,11 @@ public class TransactionController implements UITransactionController {
     }
 
     @Override
-    public ResponseEntity<TransactionResponse> returnToSupplier(TransactionRequest request) {
-        return null;
+    @PostMapping("/return-to-supplier")
+    public ResponseEntity<TransactionResponse> returnToSupplier(@Valid @RequestBody final TransactionRequest request) {
+        log.info("Received request to record a return to supplier transaction: {}", request);
+        TransactionResponse newTransaction = transactionService.returnToSupplier(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newTransaction);
     }
 
     @Override
