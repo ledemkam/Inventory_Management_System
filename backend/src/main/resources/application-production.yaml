@@ -26,6 +26,7 @@ management:
     health:
       show-details: never
 
+
 logging:
   level:
     root: WARN

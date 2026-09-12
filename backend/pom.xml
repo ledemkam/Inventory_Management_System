@@ -158,7 +158,8 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
-        <!-- AOP / AspectJ (renamed from spring-boot-starter-aop in Spring Boot 4) -->
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aspectj</artifactId>
@@ -180,6 +181,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <version>4.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- RestTestClient auto-configuration (@AutoConfigureRestTestClient) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-resttestclient</artifactId>
             <scope>test</scope>
         </dependency>
         <!--Spring Security and jwt-->
@@ -214,7 +221,6 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-
 
     </dependencies>
 

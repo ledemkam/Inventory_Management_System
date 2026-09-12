@@ -1,7 +1,5 @@
 package com.kte.backend.controllers.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kte.backend.config.SecurityConfig;
 import com.kte.backend.models.dto.request.LoginRequest;
 import com.kte.backend.models.dto.request.RegisterRequest;
@@ -13,32 +11,28 @@ import com.kte.backend.services.authentication.AuthenticationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import java.time.LocalDateTime;
-
-import org.springframework.http.MediaType;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthenticationController.class)
+@AutoConfigureRestTestClient
 @Import(SecurityConfig.class)
 @DisplayName("Web layer test for AuthenticationController")
 class AuthenticationControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private RestTestClient restTestClient;
 
     @MockitoBean
     private AuthenticationService authenticationService;
@@ -51,7 +45,7 @@ class AuthenticationControllerTest {
 
     @Test
     @DisplayName("Should register a new user successfully")
-    void should_Register_User() throws Exception {
+    void should_Register_User() {
         // Given
         final RegisterRequest registerRequest = RegisterRequest.builder()
                 .username("john.doe")
@@ -74,21 +68,23 @@ class AuthenticationControllerTest {
                 .thenReturn(expectedResponse);
 
         // When & Then
-        mockMvc.perform(post("/api/v1/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(expectedResponse.id()))
-                .andExpect(jsonPath("$.username").value(expectedResponse.username()))
-                .andExpect(jsonPath("$.email").value(expectedResponse.email()))
-                .andExpect(jsonPath("$.role").value(expectedResponse.role().name()));
+        restTestClient.post().uri("/api/v1/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(registerRequest)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(expectedResponse.id())
+                .jsonPath("$.username").isEqualTo(expectedResponse.username())
+                .jsonPath("$.email").isEqualTo(expectedResponse.email())
+                .jsonPath("$.role").isEqualTo(expectedResponse.role().name());
 
         verify(authenticationService, times(1)).registerUser(any(RegisterRequest.class));
     }
 
     @Test
     @DisplayName("should login a user")
-    void should_Login() throws Exception {
+    void should_Login() {
         //Given
         final LoginRequest loginRequest = LoginRequest.builder()
                 .username("ledemkam")
@@ -104,12 +100,14 @@ class AuthenticationControllerTest {
                 .thenReturn(expectedResponse);
 
         // When & Then
-        mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").value(expectedResponse.accessToken()))
-                .andExpect(jsonPath("$.tokenType").value(expectedResponse.tokenType()));
+        restTestClient.post().uri("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(loginRequest)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.accessToken").isEqualTo(expectedResponse.accessToken())
+                .jsonPath("$.tokenType").isEqualTo(expectedResponse.tokenType());
 
         verify(authenticationService, times(1)).login(any(LoginRequest.class));
     }

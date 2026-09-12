@@ -62,7 +62,7 @@ server:
     min-response-size: 1024
     excluded-media-types: image/png,image/jpeg,image/gif,image/webp
 
-# Actuator configuration for monitoring
+# Actuator configuration for health/info endpoints.
 management:
   endpoints:
     web:
@@ -71,15 +71,17 @@ management:
   endpoint:
     health:
       show-details: never
+      probes:
+        enabled: true
 
-# Baseline logging; overridden per-profile (see application-development.yaml / application-production.yaml)
+# Baseline logging; overridden per-profile (see application-development.yaml / application-production.yaml).
 logging:
   level:
     root: INFO
     com.kte.backend: INFO
   pattern:
-    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
-    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{traceId:-},%X{spanId:-}] %-5level %logger{36} - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{traceId:-},%X{spanId:-}] %-5level %logger{36} - %msg%n'
 
 # Springdoc OpenAPI configuration - off by default, enabled explicitly in development
 springdoc:

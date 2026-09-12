@@ -1,6 +1,5 @@
 package com.kte.backend.controllers.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kte.backend.common.PageResponse;
 import com.kte.backend.config.SecurityConfig;
 import com.kte.backend.mapper.UserMapper;
@@ -16,20 +15,18 @@ import com.kte.backend.services.authentication.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -38,22 +35,15 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
-@AutoConfigureMockMvc
+@AutoConfigureRestTestClient
 @Import(SecurityConfig.class)
 @DisplayName("web layer test for UserController")
 class UserControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private RestTestClient restTestClient;
 
     @MockitoBean
     private UserService userService;
@@ -67,7 +57,7 @@ class UserControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     @DisplayName("should return all users")
-    void should_Return_get_All_Users() throws Exception {
+    void should_Return_get_All_Users() {
         final UserResponse userResponse = UserResponse.builder()
                 .id("1")
                 .username("testuser")
@@ -94,21 +84,23 @@ class UserControllerTest {
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("ADMIN");
 
-        mockMvc.perform(get("/api/v1/users")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(1)))
-                .andExpect(jsonPath("$.content[0].id", is("1")))
-                .andExpect(jsonPath("$.page", is(0)))
-                .andExpect(jsonPath("$.size", is(10)))
-                .andExpect(jsonPath("$.totalElements", is(1)));
+        restTestClient.get().uri("/api/v1/users")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.content.length()").isEqualTo(1)
+                .jsonPath("$.content[0].id").isEqualTo("1")
+                .jsonPath("$.page").isEqualTo(0)
+                .jsonPath("$.size").isEqualTo(10)
+                .jsonPath("$.totalElements").isEqualTo(1);
     }
 
     @Test
     @DisplayName("should update a user")
     @WithMockUser(roles = "ADMIN")
-    void should_Update_User() throws Exception {
+    void should_Update_User() {
         final UserRequest updateRequest = UserRequest.builder()
                 .username("updateduser")
                 .email("updated@example.com")
@@ -131,21 +123,23 @@ class UserControllerTest {
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("ADMIN");
 
-        mockMvc.perform(put("/api/v1/users/{user-id}", "1")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateRequest)))
-                .andExpect(status().isAccepted())
-                .andExpect(jsonPath("$.id", is("1")))
-                .andExpect(jsonPath("$.username", is("updateduser")))
-                .andExpect(jsonPath("$.email", is("updated@example.com")));
+        restTestClient.put().uri("/api/v1/users/{user-id}", "1")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(updateRequest)
+                .exchange()
+                .expectStatus().isAccepted()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("1")
+                .jsonPath("$.username").isEqualTo("updateduser")
+                .jsonPath("$.email").isEqualTo("updated@example.com");
 
         verify(userService, times(1)).updateUser(eq("1"), any(UserRequest.class));
     }
 
     @Test
     @DisplayName("should let a user update their own account")
-    void should_Update_Own_Account() throws Exception {
+    void should_Update_Own_Account() {
         final UserRequest updateRequest = UserRequest.builder()
                 .username("updateduser")
                 .email("updated@example.com")
@@ -167,18 +161,19 @@ class UserControllerTest {
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("USER");
 
-        mockMvc.perform(put("/api/v1/users/{user-id}", "1")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateRequest)))
-                .andExpect(status().isAccepted());
+        restTestClient.put().uri("/api/v1/users/{user-id}", "1")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(updateRequest)
+                .exchange()
+                .expectStatus().isAccepted();
 
         verify(userService, times(1)).updateUser(eq("1"), any(UserRequest.class));
     }
 
     @Test
     @DisplayName("should forbid a user from updating another account")
-    void should_Forbid_Updating_Another_Account() throws Exception {
+    void should_Forbid_Updating_Another_Account() {
         final UserRequest updateRequest = UserRequest.builder()
                 .username("updateduser")
                 .email("updated@example.com")
@@ -191,11 +186,12 @@ class UserControllerTest {
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("2");
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("USER");
 
-        mockMvc.perform(put("/api/v1/users/{user-id}", "1")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateRequest)))
-                .andExpect(status().isForbidden());
+        restTestClient.put().uri("/api/v1/users/{user-id}", "1")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(updateRequest)
+                .exchange()
+                .expectStatus().isForbidden();
 
         verify(userService, never()).updateUser(anyString(), any(UserRequest.class));
     }
@@ -203,7 +199,7 @@ class UserControllerTest {
     @Test
     @DisplayName("should return the current logged in user")
     @WithMockUser(roles = "ADMIN")
-    void should_Return_Current_User() throws Exception {
+    void should_Return_Current_User() {
         final User currentUser = User.builder()
                 .id("1")
                 .username("testuser")
@@ -225,12 +221,14 @@ class UserControllerTest {
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("ADMIN");
 
-        mockMvc.perform(get("/api/v1/users/current")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is("1")))
-                .andExpect(jsonPath("$.username", is("testuser")));
+        restTestClient.get().uri("/api/v1/users/current")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("1")
+                .jsonPath("$.username").isEqualTo("testuser");
 
         verify(userService, times(1)).getCurrentLoggedInUser();
     }
@@ -238,7 +236,7 @@ class UserControllerTest {
     @Test
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
     @DisplayName("should return a user's transactions")
-    void should_Return_User_Transactions() throws Exception {
+    void should_Return_User_Transactions() {
         final TransactionResponse transactionResponse = TransactionResponse.builder()
                 .id("t1")
                 .totalProducts(2)
@@ -267,13 +265,15 @@ class UserControllerTest {
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("2");
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("MANAGER");
 
-        mockMvc.perform(get("/api/v1/users/transactions/{user-id}", "1")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(1)))
-                .andExpect(jsonPath("$.content[0].id", is("t1")))
-                .andExpect(jsonPath("$.totalElements", is(1)));
+        restTestClient.get().uri("/api/v1/users/transactions/{user-id}", "1")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.content.length()").isEqualTo(1)
+                .jsonPath("$.content[0].id").isEqualTo("t1")
+                .jsonPath("$.totalElements").isEqualTo(1);
 
         verify(userService, times(1)).getUserTransactions(eq("1"), any());
     }
@@ -281,46 +281,49 @@ class UserControllerTest {
     @Test
     @DisplayName("should delete a user")
     @WithMockUser(roles = "ADMIN")
-    void should_Delete_User() throws Exception {
+    void should_Delete_User() {
         doNothing().when(userService).deleteUser("1");
 
         when(jwtTokenService.validateToken(anyString())).thenReturn(true);
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("ADMIN");
 
-        mockMvc.perform(delete("/api/v1/users/{user-id}", "1")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token"))
-                .andExpect(status().isNoContent());
+        restTestClient.delete().uri("/api/v1/users/{user-id}", "1")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                .exchange()
+                .expectStatus().isNoContent();
 
         verify(userService, times(1)).deleteUser("1");
     }
 
     @Test
     @DisplayName("should let a user delete their own account")
-    void should_Delete_Own_Account() throws Exception {
+    void should_Delete_Own_Account() {
         doNothing().when(userService).deleteUser("1");
 
         when(jwtTokenService.validateToken(anyString())).thenReturn(true);
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("USER");
 
-        mockMvc.perform(delete("/api/v1/users/{user-id}", "1")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token"))
-                .andExpect(status().isNoContent());
+        restTestClient.delete().uri("/api/v1/users/{user-id}", "1")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                .exchange()
+                .expectStatus().isNoContent();
 
         verify(userService, times(1)).deleteUser("1");
     }
 
     @Test
     @DisplayName("should forbid a user from deleting another account")
-    void should_Forbid_Deleting_Another_Account() throws Exception {
+    void should_Forbid_Deleting_Another_Account() {
         when(jwtTokenService.validateToken(anyString())).thenReturn(true);
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("2");
         when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("USER");
 
-        mockMvc.perform(delete("/api/v1/users/{user-id}", "1")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token"))
-                .andExpect(status().isForbidden());
+        restTestClient.delete().uri("/api/v1/users/{user-id}", "1")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                .exchange()
+                .expectStatus().isForbidden();
 
         verify(userService, never()).deleteUser(anyString());
     }
