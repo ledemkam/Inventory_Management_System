@@ -79,12 +79,19 @@ public class TransactionController implements UITransactionController {
     }
 
     @Override
-    public ResponseEntity<TransactionResponse> updateTransactionStatus(String id, TransactionStatus status) {
-        return null;
+    @PatchMapping("/update/{transaction-id}")
+    public ResponseEntity<TransactionResponse> updateTransactionStatus(
+            @PathVariable("transaction-id") final String id,
+            @RequestBody final TransactionStatus status) {
+        TransactionResponse updatedTransaction = transactionService.updateTransactionStatus(id, status);
+        return ResponseEntity.ok(updatedTransaction);
     }
 
     @Override
-    public ResponseEntity<Void> deleteTransaction(String id) {
-        return null;
+    @DeleteMapping("/{transaction-id}")
+    public ResponseEntity<Void> deleteTransaction(@PathVariable("transaction-id") final String id) {
+        transactionService.delete(id);
+        log.info("Received request to delete transaction with id: {}", id);
+        return ResponseEntity.noContent().build();
     }
 }

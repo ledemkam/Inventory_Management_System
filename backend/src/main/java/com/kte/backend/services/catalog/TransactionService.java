@@ -14,7 +14,7 @@ public interface TransactionService extends CrudServices<TransactionRequest, Tra
 
     TransactionResponse returnToSupplier(TransactionRequest transactionRequest);
 
-    TransactionResponse updateTransactionStatus(Long transactionId, TransactionStatus transactionStatus);
+    TransactionResponse updateTransactionStatus(String transactionId, TransactionStatus transactionStatus);
 
     PageResponse<TransactionResponse> search(String searchText, Pageable pageable);
 

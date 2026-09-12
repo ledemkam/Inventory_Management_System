@@ -96,13 +96,13 @@ public class TransactionServiceImpl implements TransactionService {
      * </ul>
      */
     @Override
-    public TransactionResponse updateTransactionStatus(final Long transactionId,
+    public TransactionResponse updateTransactionStatus(final String transactionId,
                                                        final TransactionStatus transactionStatus) {
         if (transactionStatus == null) {
             throw new NameValueRequiredException("Transaction status is required");
         }
 
-        final Transaction transaction = transactionValidator.findTransactionOrThrow(String.valueOf(transactionId));
+        final Transaction transaction = transactionValidator.findTransactionOrThrow(transactionId);
         final TransactionStatus current = transaction.getStatus();
 
         if (current == transactionStatus) {

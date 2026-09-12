@@ -129,7 +129,9 @@ public interface UITransactionController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = Error.class))),
     })
-    ResponseEntity<TransactionResponse> updateTransactionStatus(final String id, final TransactionStatus status);
+    ResponseEntity<TransactionResponse> updateTransactionStatus(@Valid
+                                                                @RequestBody final String id,
+                                                                final TransactionStatus status);
 
     @Operation(summary = "Delete Transaction")
     @ApiResponses(value = {
