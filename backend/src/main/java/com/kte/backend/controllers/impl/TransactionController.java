@@ -57,8 +57,12 @@ public class TransactionController implements UITransactionController {
     }
 
     @Override
-    public ResponseEntity<TransactionResponse> getTransactionById(String id) {
-        return null;
+    @GetMapping("/{transaction-id}")
+    public ResponseEntity<TransactionResponse> getTransactionById(
+            @PathVariable("transaction-id") final String id) {
+        TransactionResponse transaction = transactionService.findById(id);
+        log.debug("Received request to get transaction by id: {}", id);
+        return ResponseEntity.ok(transaction);
     }
 
     @Override
