@@ -153,6 +153,22 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    public PageResponse<TransactionResponse> search(final String searchText, final Pageable pageable) {
+        log.debug("Searching transactions with searchText '{}', pagination: page {}, size {}",
+                searchText, pageable.getPageNumber(), pageable.getPageSize());
+        return PageResponse.of(transactionRepository.searchTransactions(searchText, pageable)
+                .map(transactionMapper::entityToDto));
+    }
+
+    @Override
+    public PageResponse<TransactionResponse> searchByMonthAndYear(final int month, final int year, final Pageable pageable) {
+        log.debug("Searching transactions for month {}, year {}, pagination: page {}, size {}",
+                month, year, pageable.getPageNumber(), pageable.getPageSize());
+        return PageResponse.of(transactionRepository.findAllByMonthAndYear(month, year, pageable)
+                .map(transactionMapper::entityToDto));
+    }
+
+    @Override
     public TransactionResponse findById(final String id) {
         log.debug("Fetching transaction with id: {}", id);
         return transactionMapper.entityToDto(transactionValidator.findTransactionOrThrow(id));

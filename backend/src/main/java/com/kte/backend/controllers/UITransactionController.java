@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Transaction Controller", description = "Endpoints for managing transactions")
 public interface UITransactionController {
@@ -66,7 +67,9 @@ public interface UITransactionController {
     })
     ResponseEntity<TransactionResponse> returnToSupplier(@Valid @RequestBody final TransactionRequest request);
 
-    @Operation(summary = "Get all Transactions")
+    @Operation(summary = "Search all Transactions",
+            description = "Searches by transaction description, status, product name and product sku. "
+                    + "Returns all transactions when 'search' is omitted.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request",
@@ -78,7 +81,27 @@ public interface UITransactionController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = Error.class))),
     })
-    ResponseEntity<PageResponse<TransactionResponse>> getAllTransactions(final Pageable pageable);
+    ResponseEntity<PageResponse<TransactionResponse>> searchTransactions(
+            @RequestParam(name = "search", required = false) final String searchText, final Pageable pageable);
+
+    @Operation(summary = "Search Transactions By Month And Year",
+            description = "Searches transactions by the specified month and year.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = @Content(schema = @Schema(implementation = Error.class))),
+    })
+    ResponseEntity<PageResponse<TransactionResponse>> searchTransactionsByMonthAndYear(
+            @RequestParam(name = "month") final int month,
+            @RequestParam(name = "year") final int year,
+            final Pageable pageable);
+
 
     @Operation(summary = "Get Transaction By Id")
     @ApiResponses(value = {

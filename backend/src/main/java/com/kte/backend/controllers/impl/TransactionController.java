@@ -49,10 +49,23 @@ public class TransactionController implements UITransactionController {
     }
 
     @Override
-    @GetMapping
-    public ResponseEntity<PageResponse<TransactionResponse>> getAllTransactions(final Pageable pageable) {
-        PageResponse<TransactionResponse> response = transactionService.findAll(pageable);
-        log.debug("Received request to get all transactions with pageable: {}", pageable);
+    @GetMapping("/search")
+    public ResponseEntity<PageResponse<TransactionResponse>> searchTransactions(
+            @RequestParam(name = "search", required = false) final String searchText, final Pageable pageable) {
+        log.debug("Received request to search transactions with searchText '{}' and pageable: {}",
+                searchText, pageable);
+        PageResponse<TransactionResponse> response = transactionService.search(searchText, pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @GetMapping("/search-by-month-and-year")
+    public ResponseEntity<PageResponse<TransactionResponse>> searchTransactionsByMonthAndYear(
+            @RequestParam(name = "month") final int month,
+            @RequestParam(name = "year") final int year,
+            final Pageable pageable) {
+        log.debug("Received request to search transactions by month '{}' and year '{}' with pageable: {}", month, year, pageable);
+        PageResponse<TransactionResponse> response = transactionService.searchByMonthAndYear(month, year, pageable);
         return ResponseEntity.ok(response);
     }
 
