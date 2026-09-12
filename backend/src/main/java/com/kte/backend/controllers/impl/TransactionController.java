@@ -36,8 +36,11 @@ public class TransactionController implements UITransactionController {
     }
 
     @Override
-    public ResponseEntity<TransactionResponse> sell(TransactionRequest request) {
-        return null;
+    @PostMapping("/sell")
+    public ResponseEntity<TransactionResponse> sell(@Valid @RequestBody final TransactionRequest request) {
+        log.info("Received request to record a sell transaction: {}", request);
+        TransactionResponse newTransaction = transactionService.sell(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newTransaction);
     }
 
     @Override
