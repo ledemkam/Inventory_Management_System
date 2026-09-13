@@ -1,4 +1,4 @@
-package com.kte.backend.models.entity;
+package com.kte.backend.common;
 
 import jakarta.persistence.*;
 import lombok.*;

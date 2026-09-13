@@ -1,6 +1,6 @@
-package com.kte.backend.models.entity;
+package com.kte.backend.user;
 
-import com.kte.backend.models.enums.UserRole;
+import com.kte.backend.common.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,10 +39,6 @@ public class User extends AbstractEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
-
-    @OneToMany(mappedBy = "user")
-    private List<Transaction> transactions;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

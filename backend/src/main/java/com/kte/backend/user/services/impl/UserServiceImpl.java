@@ -1,16 +1,13 @@
-package com.kte.backend.services.authentication.impl;
+package com.kte.backend.user.services.impl;
 
 import com.kte.backend.common.PageResponse;
 import com.kte.backend.exception.EntityNotFoundException;
-import com.kte.backend.mapper.TransactionMapper;
-import com.kte.backend.mapper.UserMapper;
-import com.kte.backend.models.dto.request.UserRequest;
-import com.kte.backend.models.dto.response.TransactionResponse;
-import com.kte.backend.models.dto.response.UserResponse;
-import com.kte.backend.models.entity.User;
-import com.kte.backend.repository.TransactionRepository;
-import com.kte.backend.repository.UserRepository;
-import com.kte.backend.services.authentication.UserService;
+import com.kte.backend.user.mapper.UserMapper;
+import com.kte.backend.user.dto.request.UserRequest;
+import com.kte.backend.user.dto.response.UserResponse;
+import com.kte.backend.user.User;
+import com.kte.backend.user.repository.UserRepository;
+import com.kte.backend.user.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -29,8 +26,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final TransactionRepository transactionRepository;
-    private final TransactionMapper transactionMapper;
 
     @Override
     public PageResponse<UserResponse> getAllUsers(final Pageable pageable) {
@@ -74,17 +69,6 @@ public class UserServiceImpl implements UserService {
         User updatedUser = userRepository.save(existingUser);
         log.info("User with id {} updated successfully", id);
         return userMapper.entityToDto(updatedUser);
-    }
-
-    @Override
-    public PageResponse<TransactionResponse> getUserTransactions(final String id, final Pageable pageable) {
-        if (!userRepository.existsById(id)) {
-            throw new EntityNotFoundException("User not found with id " + id);
-        }
-
-        log.debug("Fetching transactions for user with id: {}", id);
-        return PageResponse.of(transactionRepository.findAllByUser_Id(id, pageable)
-                .map(transactionMapper::entityToDto));
     }
 
     private boolean callerCanAssignRoles() {

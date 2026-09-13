@@ -1,4 +1,4 @@
-package com.kte.backend.security;
+package com.kte.backend.user.security;
 
 import com.kte.backend.exception.AuthenticationEntryPointException;
 import io.jsonwebtoken.*;

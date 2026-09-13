@@ -1,13 +1,12 @@
-package com.kte.backend.controllers.impl;
+package com.kte.backend.user.controllers.impl;
 
 import com.kte.backend.common.PageResponse;
-import com.kte.backend.controllers.UIUserController;
-import com.kte.backend.mapper.UserMapper;
-import com.kte.backend.models.dto.request.UserRequest;
-import com.kte.backend.models.dto.response.TransactionResponse;
-import com.kte.backend.models.dto.response.UserResponse;
-import com.kte.backend.models.entity.User;
-import com.kte.backend.services.authentication.UserService;
+import com.kte.backend.user.controllers.UIUserController;
+import com.kte.backend.user.mapper.UserMapper;
+import com.kte.backend.user.dto.request.UserRequest;
+import com.kte.backend.user.dto.response.UserResponse;
+import com.kte.backend.user.User;
+import com.kte.backend.user.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,18 +53,6 @@ public class UserController implements UIUserController {
         log.debug("Received request to get current user");
         final User currentUser = userService.getCurrentLoggedInUser();
         return ResponseEntity.ok(userMapper.entityToDto(currentUser));
-    }
-
-    @Override
-    @GetMapping("/transactions/{user-id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<PageResponse<TransactionResponse>> getUserAndTransactions(
-            @PathVariable("user-id") final String id,
-            final Pageable pageable
-    ) {
-        log.debug("Received request to get user and transactions for user-id: {}", id);
-        final PageResponse<TransactionResponse> userWithTransactions = userService.getUserTransactions(id, pageable);
-        return ResponseEntity.ok(userWithTransactions);
     }
 
     @Override

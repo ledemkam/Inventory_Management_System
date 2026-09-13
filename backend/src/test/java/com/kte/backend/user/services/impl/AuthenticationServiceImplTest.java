@@ -1,15 +1,15 @@
-package com.kte.backend.services.authentication.impl;
+package com.kte.backend.user.services.impl;
 
 import com.kte.backend.exception.EntityAlreadyExistsException;
-import com.kte.backend.mapper.UserMapper;
-import com.kte.backend.models.dto.request.LoginRequest;
-import com.kte.backend.models.dto.request.RegisterRequest;
-import com.kte.backend.models.dto.response.LoginResponse;
-import com.kte.backend.models.dto.response.UserResponse;
-import com.kte.backend.models.entity.User;
-import com.kte.backend.models.enums.UserRole;
-import com.kte.backend.repository.UserRepository;
-import com.kte.backend.security.JwtTokenService;
+import com.kte.backend.user.mapper.UserMapper;
+import com.kte.backend.user.dto.request.LoginRequest;
+import com.kte.backend.user.dto.request.RegisterRequest;
+import com.kte.backend.user.dto.response.LoginResponse;
+import com.kte.backend.user.dto.response.UserResponse;
+import com.kte.backend.user.User;
+import com.kte.backend.user.UserRole;
+import com.kte.backend.user.repository.UserRepository;
+import com.kte.backend.user.security.JwtTokenService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

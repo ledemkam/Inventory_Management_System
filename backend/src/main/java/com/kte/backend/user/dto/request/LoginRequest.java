@@ -1,4 +1,4 @@
-package com.kte.backend.models.dto.request;
+package com.kte.backend.user.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

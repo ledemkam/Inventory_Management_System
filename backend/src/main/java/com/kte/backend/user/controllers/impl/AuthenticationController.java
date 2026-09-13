@@ -1,11 +1,11 @@
-package com.kte.backend.controllers.impl;
+package com.kte.backend.user.controllers.impl;
 
-import com.kte.backend.controllers.UIAuthenticationController;
-import com.kte.backend.models.dto.request.LoginRequest;
-import com.kte.backend.models.dto.request.RegisterRequest;
-import com.kte.backend.models.dto.response.LoginResponse;
-import com.kte.backend.models.dto.response.UserResponse;
-import com.kte.backend.services.authentication.AuthenticationService;
+import com.kte.backend.user.controllers.UIAuthenticationController;
+import com.kte.backend.user.dto.request.LoginRequest;
+import com.kte.backend.user.dto.request.RegisterRequest;
+import com.kte.backend.user.dto.response.LoginResponse;
+import com.kte.backend.user.dto.response.UserResponse;
+import com.kte.backend.user.services.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

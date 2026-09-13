@@ -1,6 +1,6 @@
-package com.kte.backend.security;
+package com.kte.backend.user.security;
 
-import com.kte.backend.repository.UserRepository;
+import com.kte.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

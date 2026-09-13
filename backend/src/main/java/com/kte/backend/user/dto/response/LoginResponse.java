@@ -1,4 +1,4 @@
-package com.kte.backend.models.dto.response;
+package com.kte.backend.user.dto.response;
 
 import lombok.Builder;
 

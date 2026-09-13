@@ -1,6 +1,6 @@
-package com.kte.backend.models.dto.request;
+package com.kte.backend.user.dto.request;
 
-import com.kte.backend.models.enums.UserRole;
+import com.kte.backend.user.UserRole;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

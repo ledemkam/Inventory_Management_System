@@ -1,4 +1,4 @@
-package com.kte.backend.services;
+package com.kte.backend.common;
 
 import com.kte.backend.common.PageResponse;
 import org.springframework.data.domain.Pageable;

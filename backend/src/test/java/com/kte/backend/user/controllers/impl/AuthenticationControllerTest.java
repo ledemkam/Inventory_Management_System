@@ -1,13 +1,13 @@
-package com.kte.backend.controllers.impl;
+package com.kte.backend.user.controllers.impl;
 
 import com.kte.backend.config.SecurityConfig;
-import com.kte.backend.models.dto.request.LoginRequest;
-import com.kte.backend.models.dto.request.RegisterRequest;
-import com.kte.backend.models.dto.response.LoginResponse;
-import com.kte.backend.models.dto.response.UserResponse;
-import com.kte.backend.models.enums.UserRole;
-import com.kte.backend.security.JwtTokenService;
-import com.kte.backend.services.authentication.AuthenticationService;
+import com.kte.backend.user.dto.request.LoginRequest;
+import com.kte.backend.user.dto.request.RegisterRequest;
+import com.kte.backend.user.dto.response.LoginResponse;
+import com.kte.backend.user.dto.response.UserResponse;
+import com.kte.backend.user.UserRole;
+import com.kte.backend.user.security.JwtTokenService;
+import com.kte.backend.user.services.AuthenticationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

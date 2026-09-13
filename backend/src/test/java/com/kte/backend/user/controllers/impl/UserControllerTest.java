@@ -1,17 +1,14 @@
-package com.kte.backend.controllers.impl;
+package com.kte.backend.user.controllers.impl;
 
 import com.kte.backend.common.PageResponse;
 import com.kte.backend.config.SecurityConfig;
-import com.kte.backend.mapper.UserMapper;
-import com.kte.backend.models.dto.request.UserRequest;
-import com.kte.backend.models.dto.response.TransactionResponse;
-import com.kte.backend.models.dto.response.UserResponse;
-import com.kte.backend.models.entity.User;
-import com.kte.backend.models.enums.TransactionStatus;
-import com.kte.backend.models.enums.TransactionType;
-import com.kte.backend.models.enums.UserRole;
-import com.kte.backend.security.JwtTokenService;
-import com.kte.backend.services.authentication.UserService;
+import com.kte.backend.user.mapper.UserMapper;
+import com.kte.backend.user.dto.request.UserRequest;
+import com.kte.backend.user.dto.response.UserResponse;
+import com.kte.backend.user.User;
+import com.kte.backend.user.UserRole;
+import com.kte.backend.user.security.JwtTokenService;
+import com.kte.backend.user.services.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +21,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -231,51 +227,6 @@ class UserControllerTest {
                 .jsonPath("$.username").isEqualTo("testuser");
 
         verify(userService, times(1)).getCurrentLoggedInUser();
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    @DisplayName("should return a user's transactions")
-    void should_Return_User_Transactions() {
-        final TransactionResponse transactionResponse = TransactionResponse.builder()
-                .id("t1")
-                .totalProducts(2)
-                .totalPrice(BigDecimal.valueOf(100))
-                .transactionType(TransactionType.SALE)
-                .status(TransactionStatus.COMPLETED)
-                .build();
-
-        final PageResponse<TransactionResponse> transactionResponses = PageResponse.<TransactionResponse>builder()
-                .content(List.of(transactionResponse))
-                .page(0)
-                .size(10)
-                .totalElements(1)
-                .totalPages(1)
-                .hasNext(false)
-                .hasPrevious(false)
-                .isFirst(true)
-                .isLast(true)
-                .build();
-
-        when(userService.getUserTransactions(eq("1"), any())).thenReturn(transactionResponses);
-
-        // getUserAndTransactions is granted to ADMIN and MANAGER (see hasAnyRole on the
-        // controller), so this test exercises the MANAGER path specifically.
-        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
-        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("2");
-        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("MANAGER");
-
-        restTestClient.get().uri("/api/v1/users/transactions/{user-id}", "1")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                .jsonPath("$.content.length()").isEqualTo(1)
-                .jsonPath("$.content[0].id").isEqualTo("t1")
-                .jsonPath("$.totalElements").isEqualTo(1);
-
-        verify(userService, times(1)).getUserTransactions(eq("1"), any());
     }
 
     @Test
