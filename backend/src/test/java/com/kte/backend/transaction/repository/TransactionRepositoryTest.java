@@ -1,10 +1,12 @@
-package com.kte.backend.repository;
+package com.kte.backend.transaction.repository;
 
-import com.kte.backend.models.entity.Category;
-import com.kte.backend.models.entity.Product;
-import com.kte.backend.models.entity.Transaction;
-import com.kte.backend.models.enums.TransactionStatus;
-import com.kte.backend.models.enums.TransactionType;
+import com.kte.backend.catalog.Category;
+import com.kte.backend.catalog.Product;
+import com.kte.backend.catalog.repository.CategoryRepository;
+import com.kte.backend.catalog.repository.ProductRepository;
+import com.kte.backend.transaction.Transaction;
+import com.kte.backend.transaction.TransactionStatus;
+import com.kte.backend.transaction.TransactionType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
