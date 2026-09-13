@@ -1,13 +1,13 @@
-package com.kte.backend.services.catalog.impl;
+package com.kte.backend.catalog.services.impl;
 
 import com.kte.backend.common.PageResponse;
-import com.kte.backend.mapper.SupplierMapper;
-import com.kte.backend.models.dto.request.SupplierRequest;
-import com.kte.backend.models.dto.response.SupplierResponse;
-import com.kte.backend.models.entity.Supplier;
-import com.kte.backend.repository.SupplierRepository;
-import com.kte.backend.services.catalog.SupplierService;
-import com.kte.backend.validator.SupplierValidator;
+import com.kte.backend.catalog.mapper.SupplierMapper;
+import com.kte.backend.catalog.dto.request.SupplierRequest;
+import com.kte.backend.catalog.dto.response.SupplierResponse;
+import com.kte.backend.catalog.Supplier;
+import com.kte.backend.catalog.repository.SupplierRepository;
+import com.kte.backend.catalog.services.SupplierService;
+import com.kte.backend.catalog.validator.SupplierValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;

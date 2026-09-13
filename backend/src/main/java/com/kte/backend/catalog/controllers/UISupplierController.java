@@ -1,8 +1,8 @@
-package com.kte.backend.controllers;
+package com.kte.backend.catalog.controllers;
 
 import com.kte.backend.common.PageResponse;
-import com.kte.backend.models.dto.request.SupplierRequest;
-import com.kte.backend.models.dto.response.SupplierResponse;
+import com.kte.backend.catalog.dto.request.SupplierRequest;
+import com.kte.backend.catalog.dto.response.SupplierResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

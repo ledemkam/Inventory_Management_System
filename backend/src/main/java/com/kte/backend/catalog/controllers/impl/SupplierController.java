@@ -1,10 +1,10 @@
-package com.kte.backend.controllers.impl;
+package com.kte.backend.catalog.controllers.impl;
 
 import com.kte.backend.common.PageResponse;
-import com.kte.backend.controllers.UISupplierController;
-import com.kte.backend.models.dto.request.SupplierRequest;
-import com.kte.backend.models.dto.response.SupplierResponse;
-import com.kte.backend.services.catalog.SupplierService;
+import com.kte.backend.catalog.controllers.UISupplierController;
+import com.kte.backend.catalog.dto.request.SupplierRequest;
+import com.kte.backend.catalog.dto.response.SupplierResponse;
+import com.kte.backend.catalog.services.SupplierService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
