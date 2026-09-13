@@ -1,9 +1,9 @@
-package com.kte.backend.mapper;
+package com.kte.backend.catalog.mapper;
 
-import com.kte.backend.models.dto.request.ProductRequest;
-import com.kte.backend.models.dto.response.ProductResponse;
-import com.kte.backend.models.entity.Category;
-import com.kte.backend.models.entity.Product;
+import com.kte.backend.catalog.dto.request.ProductRequest;
+import com.kte.backend.catalog.dto.response.ProductResponse;
+import com.kte.backend.catalog.Category;
+import com.kte.backend.catalog.Product;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

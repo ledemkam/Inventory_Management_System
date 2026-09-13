@@ -1,16 +1,16 @@
-package com.kte.backend.services.catalog.impl;
+package com.kte.backend.catalog.services.impl;
 
 import com.kte.backend.common.PageResponse;
-import com.kte.backend.mapper.ProductMapper;
-import com.kte.backend.models.dto.request.ProductRequest;
-import com.kte.backend.models.dto.response.CategoryResponse;
-import com.kte.backend.models.dto.response.ProductResponse;
-import com.kte.backend.models.entity.Category;
-import com.kte.backend.models.entity.Product;
-import com.kte.backend.repository.ProductRepository;
-import com.kte.backend.services.catalog.CategoryService;
-import com.kte.backend.services.storage.FileStorageService;
-import com.kte.backend.validator.ProductValidator;
+import com.kte.backend.catalog.mapper.ProductMapper;
+import com.kte.backend.catalog.dto.request.ProductRequest;
+import com.kte.backend.catalog.dto.response.CategoryResponse;
+import com.kte.backend.catalog.dto.response.ProductResponse;
+import com.kte.backend.catalog.Category;
+import com.kte.backend.catalog.Product;
+import com.kte.backend.catalog.repository.ProductRepository;
+import com.kte.backend.catalog.services.CategoryService;
+import com.kte.backend.catalog.storage.FileStorageService;
+import com.kte.backend.catalog.validator.ProductValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

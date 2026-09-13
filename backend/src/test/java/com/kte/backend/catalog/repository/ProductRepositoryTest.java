@@ -1,7 +1,7 @@
-package com.kte.backend.repository;
+package com.kte.backend.catalog.repository;
 
-import com.kte.backend.models.entity.Category;
-import com.kte.backend.models.entity.Product;
+import com.kte.backend.catalog.Category;
+import com.kte.backend.catalog.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
