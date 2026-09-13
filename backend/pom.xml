@@ -308,6 +308,9 @@
                     <includes>
                         <include>**/*IT.java</include>
                     </includes>
+                    <!-- Safety net: give the forked JVM more time to exit cleanly after
+                         Testcontainers/Hikari shutdown before Failsafe force-kills it. -->
+                    <forkedProcessExitTimeoutInSeconds>60</forkedProcessExitTimeoutInSeconds>
                 </configuration>
             </plugin>
             <plugin>

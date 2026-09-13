@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -50,6 +51,7 @@ public class TransactionController implements UITransactionController {
 
     @Override
     @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<PageResponse<TransactionResponse>> searchTransactions(
             @RequestParam(name = "search", required = false) final String searchText, final Pageable pageable) {
         log.debug("Received request to search transactions with searchText '{}' and pageable: {}",
@@ -60,6 +62,7 @@ public class TransactionController implements UITransactionController {
 
     @Override
     @GetMapping("/search-by-month-and-year")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<PageResponse<TransactionResponse>> searchTransactionsByMonthAndYear(
             @RequestParam(name = "month") final int month,
             @RequestParam(name = "year") final int year,
@@ -71,6 +74,7 @@ public class TransactionController implements UITransactionController {
 
     @Override
     @GetMapping("/{transaction-id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<TransactionResponse> getTransactionById(
             @PathVariable("transaction-id") final String id) {
         TransactionResponse transaction = transactionService.findById(id);
@@ -80,6 +84,7 @@ public class TransactionController implements UITransactionController {
 
     @Override
     @PatchMapping("/update/{transaction-id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<TransactionResponse> updateTransactionStatus(
             @PathVariable("transaction-id") final String id,
             @RequestBody final TransactionStatus status) {
@@ -89,6 +94,7 @@ public class TransactionController implements UITransactionController {
 
     @Override
     @DeleteMapping("/{transaction-id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Void> deleteTransaction(@PathVariable("transaction-id") final String id) {
         transactionService.delete(id);
         log.info("Received request to delete transaction with id: {}", id);
