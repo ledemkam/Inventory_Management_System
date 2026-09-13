@@ -1,6 +1,6 @@
-package com.kte.backend.repository;
+package com.kte.backend.catalog.repository;
 
-import com.kte.backend.models.entity.Category;
+import com.kte.backend.catalog.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

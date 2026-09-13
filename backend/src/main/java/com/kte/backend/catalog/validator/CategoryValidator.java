@@ -1,7 +1,7 @@
-package com.kte.backend.validator;
+package com.kte.backend.catalog.validator;
 
 import com.kte.backend.exception.EntityAlreadyExistsException;
-import com.kte.backend.repository.CategoryRepository;
+import com.kte.backend.catalog.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

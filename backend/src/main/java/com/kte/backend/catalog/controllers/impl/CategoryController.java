@@ -1,10 +1,10 @@
-package com.kte.backend.controllers.impl;
+package com.kte.backend.catalog.controllers.impl;
 
 import com.kte.backend.common.PageResponse;
-import com.kte.backend.controllers.UICategoryController;
-import com.kte.backend.models.dto.request.CategoryRequest;
-import com.kte.backend.models.dto.response.CategoryResponse;
-import com.kte.backend.services.catalog.CategoryService;
+import com.kte.backend.catalog.controllers.UICategoryController;
+import com.kte.backend.catalog.dto.request.CategoryRequest;
+import com.kte.backend.catalog.dto.response.CategoryResponse;
+import com.kte.backend.catalog.services.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

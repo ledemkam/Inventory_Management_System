@@ -1,5 +1,6 @@
-package com.kte.backend.models.entity;
+package com.kte.backend.catalog;
 
+import com.kte.backend.common.AbstractEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;

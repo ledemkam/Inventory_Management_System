@@ -1,9 +1,9 @@
-package com.kte.backend.mapper;
+package com.kte.backend.catalog.mapper;
 
 import com.kte.backend.common.PageResponse;
-import com.kte.backend.models.dto.request.CategoryRequest;
-import com.kte.backend.models.dto.response.CategoryResponse;
-import com.kte.backend.models.entity.Category;
+import com.kte.backend.catalog.dto.request.CategoryRequest;
+import com.kte.backend.catalog.dto.response.CategoryResponse;
+import com.kte.backend.catalog.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
