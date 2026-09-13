@@ -1,14 +1,14 @@
-package com.kte.backend.controllers.impl;
+package com.kte.backend.catalog.controllers.impl;
 
 
 import com.kte.backend.common.PageResponse;
 import com.kte.backend.config.SecurityConfig;
-import com.kte.backend.mapper.CategoryMapper;
-import com.kte.backend.models.dto.request.CategoryRequest;
-import com.kte.backend.models.dto.response.CategoryResponse;
-import com.kte.backend.models.entity.Category;
-import com.kte.backend.security.JwtTokenService;
-import com.kte.backend.services.catalog.CategoryService;
+import com.kte.backend.catalog.mapper.CategoryMapper;
+import com.kte.backend.catalog.dto.request.CategoryRequest;
+import com.kte.backend.catalog.dto.response.CategoryResponse;
+import com.kte.backend.catalog.Category;
+import com.kte.backend.user.security.JwtTokenService;
+import com.kte.backend.catalog.services.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
