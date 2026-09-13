@@ -12,6 +12,16 @@ spring:
   flyway:
     enabled: true
 
+  # Small, fast-failing pool: the Testcontainers Postgres instance can be torn down
+  # before Hikari closes the pool at JVM shutdown, so validating a full-size pool of
+  # dead connections can stall the forked test JVM past Surefire/Failsafe's exit timeout.
+  datasource:
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+      connection-timeout: 5000
+      validation-timeout: 2000
+
 logging:
   level:
     root: WARN
