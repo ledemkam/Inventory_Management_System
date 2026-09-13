@@ -1,7 +1,9 @@
-package com.kte.backend.models.entity;
+package com.kte.backend.transaction;
 
-import com.kte.backend.models.enums.TransactionStatus;
-import com.kte.backend.models.enums.TransactionType;
+import com.kte.backend.catalog.Product;
+import com.kte.backend.catalog.Supplier;
+import com.kte.backend.common.AbstractEntity;
+import com.kte.backend.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

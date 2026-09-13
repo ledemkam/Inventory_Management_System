@@ -1,4 +1,4 @@
-package com.kte.backend.models.enums;
+package com.kte.backend.transaction;
 
 public enum TransactionStatus {
     PENDING, PROCESSING, COMPLETED, CANCELED

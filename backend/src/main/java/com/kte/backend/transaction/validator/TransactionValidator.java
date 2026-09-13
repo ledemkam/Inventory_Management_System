@@ -1,11 +1,12 @@
-package com.kte.backend.validator;
+package com.kte.backend.transaction.validator;
 
 import com.kte.backend.exception.EntityNotFoundException;
 import com.kte.backend.exception.NameValueRequiredException;
-import com.kte.backend.models.dto.request.TransactionRequest;
-import com.kte.backend.models.entity.Supplier;
-import com.kte.backend.models.entity.Transaction;
-import com.kte.backend.repository.TransactionRepository;
+import com.kte.backend.transaction.dto.request.TransactionRequest;
+import com.kte.backend.catalog.Supplier;
+import com.kte.backend.catalog.validator.SupplierValidator;
+import com.kte.backend.transaction.Transaction;
+import com.kte.backend.transaction.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

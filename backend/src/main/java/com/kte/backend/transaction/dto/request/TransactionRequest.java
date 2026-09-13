@@ -1,4 +1,4 @@
-package com.kte.backend.models.dto.request;
+package com.kte.backend.transaction.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

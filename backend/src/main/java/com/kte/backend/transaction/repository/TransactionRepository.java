@@ -1,7 +1,7 @@
-package com.kte.backend.repository;
+package com.kte.backend.transaction.repository;
 
 
-import com.kte.backend.models.entity.Transaction;
+import com.kte.backend.transaction.Transaction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

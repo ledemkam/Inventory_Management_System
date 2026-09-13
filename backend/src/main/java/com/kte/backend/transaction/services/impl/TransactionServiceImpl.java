@@ -1,22 +1,24 @@
-package com.kte.backend.services.catalog.impl;
+package com.kte.backend.transaction.services.impl;
 
 
 import com.kte.backend.common.PageResponse;
 import com.kte.backend.exception.NameValueRequiredException;
-import com.kte.backend.mapper.TransactionMapper;
-import com.kte.backend.models.dto.request.TransactionRequest;
-import com.kte.backend.models.dto.response.TransactionResponse;
-import com.kte.backend.models.entity.Product;
-import com.kte.backend.models.entity.Supplier;
-import com.kte.backend.models.entity.Transaction;
-import com.kte.backend.models.enums.TransactionStatus;
-import com.kte.backend.models.enums.TransactionType;
-import com.kte.backend.repository.TransactionRepository;
-import com.kte.backend.services.catalog.TransactionService;
+import com.kte.backend.transaction.mapper.TransactionMapper;
+import com.kte.backend.transaction.dto.request.TransactionRequest;
+import com.kte.backend.transaction.dto.response.TransactionResponse;
+import com.kte.backend.catalog.Product;
+import com.kte.backend.catalog.Supplier;
+import com.kte.backend.transaction.Transaction;
+import com.kte.backend.transaction.TransactionStatus;
+import com.kte.backend.transaction.TransactionType;
+import com.kte.backend.transaction.repository.TransactionRepository;
+import com.kte.backend.transaction.services.TransactionService;
 
-import com.kte.backend.factory.TransactionsFactory;
-import com.kte.backend.validator.ProductValidator;
-import com.kte.backend.validator.TransactionValidator;
+import com.kte.backend.transaction.factory.TransactionsFactory;
+import com.kte.backend.catalog.validator.ProductValidator;
+import com.kte.backend.transaction.validator.TransactionValidator;
+import com.kte.backend.exception.EntityNotFoundException;
+import com.kte.backend.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final TransactionsFactory transactionsFactory;
     private final TransactionValidator transactionValidator;
+    private final UserRepository userRepository;
 
     /**
      * Records a pending purchase from a supplier. Stock is increased on completion.
@@ -178,6 +181,17 @@ public class TransactionServiceImpl implements TransactionService {
     public void delete(final String id) {
         log.info("Deleting transaction with id: {}", id);
         transactionRepository.delete(transactionValidator.findTransactionOrThrow(id));
+    }
+
+    @Override
+    public PageResponse<TransactionResponse> findAllByUserId(final String userId, final Pageable pageable) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("User not found with id " + userId);
+        }
+
+        log.debug("Fetching transactions for user with id: {}", userId);
+        return PageResponse.of(transactionRepository.findAllByUser_Id(userId, pageable)
+                .map(transactionMapper::entityToDto));
     }
 
 }
