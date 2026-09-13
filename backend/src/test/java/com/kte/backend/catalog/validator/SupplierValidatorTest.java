@@ -1,9 +1,9 @@
-package com.kte.backend.validator;
+package com.kte.backend.catalog.validator;
 
 import com.kte.backend.exception.EntityAlreadyExistsException;
 import com.kte.backend.exception.EntityNotFoundException;
-import com.kte.backend.models.entity.Supplier;
-import com.kte.backend.repository.SupplierRepository;
+import com.kte.backend.catalog.Supplier;
+import com.kte.backend.catalog.repository.SupplierRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

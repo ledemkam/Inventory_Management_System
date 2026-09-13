@@ -1,6 +1,6 @@
-package com.kte.backend.repository;
+package com.kte.backend.catalog.repository;
 
-import com.kte.backend.models.entity.Supplier;
+import com.kte.backend.catalog.Supplier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
