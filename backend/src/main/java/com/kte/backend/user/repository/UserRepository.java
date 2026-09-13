@@ -1,7 +1,7 @@
-package com.kte.backend.repository;
+package com.kte.backend.user.repository;
 
 
-import com.kte.backend.models.entity.User;
+import com.kte.backend.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
