@@ -1,4 +1,4 @@
-package com.kte.backend.config;
+package com.kte.backend.catalog.storage;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

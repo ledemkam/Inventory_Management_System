@@ -1,4 +1,4 @@
-package com.kte.backend.services.storage;
+package com.kte.backend.catalog.storage;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
