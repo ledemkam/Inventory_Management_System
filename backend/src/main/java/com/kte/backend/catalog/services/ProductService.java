@@ -1,8 +1,8 @@
-package com.kte.backend.services.catalog;
+package com.kte.backend.catalog.services;
 
-import com.kte.backend.models.dto.request.ProductRequest;
-import com.kte.backend.models.dto.response.ProductResponse;
-import com.kte.backend.services.CrudServices;
+import com.kte.backend.catalog.dto.request.ProductRequest;
+import com.kte.backend.catalog.dto.response.ProductResponse;
+import com.kte.backend.common.CrudServices;
 
 /**
  * CRUD operations for products.

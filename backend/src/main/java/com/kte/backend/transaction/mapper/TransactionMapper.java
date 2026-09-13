@@ -1,8 +1,8 @@
-package com.kte.backend.mapper;
+package com.kte.backend.transaction.mapper;
 
-import com.kte.backend.models.dto.request.TransactionRequest;
-import com.kte.backend.models.dto.response.TransactionResponse;
-import com.kte.backend.models.entity.Transaction;
+import com.kte.backend.transaction.dto.request.TransactionRequest;
+import com.kte.backend.transaction.dto.response.TransactionResponse;
+import com.kte.backend.transaction.Transaction;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;

@@ -1,4 +1,4 @@
-package com.kte.backend.models.dto.response;
+package com.kte.backend.catalog.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

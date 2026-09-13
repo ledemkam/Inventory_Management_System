@@ -1,7 +1,7 @@
-package com.kte.backend.repository;
+package com.kte.backend.catalog.repository;
 
 
-import com.kte.backend.models.entity.Product;
+import com.kte.backend.catalog.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

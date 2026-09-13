@@ -1,5 +1,6 @@
-package com.kte.backend.models.entity;
+package com.kte.backend.catalog;
 
+import com.kte.backend.common.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

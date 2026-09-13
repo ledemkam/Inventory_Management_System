@@ -1,4 +1,4 @@
-package com.kte.backend.models.dto.request;
+package com.kte.backend.catalog.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kte.backend.common.ImageUpload;
