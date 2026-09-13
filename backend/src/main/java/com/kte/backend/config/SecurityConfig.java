@@ -1,8 +1,8 @@
 package com.kte.backend.config;
 
 
-import com.kte.backend.security.JwtAuthenticationFilter;
-import com.kte.backend.security.JwtTokenService;
+import com.kte.backend.user.security.JwtAuthenticationFilter;
+import com.kte.backend.user.security.JwtTokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

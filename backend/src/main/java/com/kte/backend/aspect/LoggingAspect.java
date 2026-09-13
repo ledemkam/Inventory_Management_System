@@ -26,11 +26,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggingAspect {
 
-    @Pointcut("within(com.kte.backend.services..*)")
+    @Pointcut("within(com.kte.backend..services..*)")
     public void serviceLayer() {
     }
 
-    @Pointcut("within(com.kte.backend.controllers..*)")
+    @Pointcut("within(com.kte.backend..controllers..*)")
     public void controllerLayer() {
     }
 
