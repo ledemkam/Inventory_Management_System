@@ -1,7 +1,7 @@
-package com.kte.backend.repository;
+package com.kte.backend.user.repository;
 
-import com.kte.backend.models.entity.User;
-import com.kte.backend.models.enums.UserRole;
+import com.kte.backend.user.User;
+import com.kte.backend.user.UserRole;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

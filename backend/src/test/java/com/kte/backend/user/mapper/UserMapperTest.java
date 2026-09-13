@@ -1,10 +1,10 @@
-package com.kte.backend.mapper;
+package com.kte.backend.user.mapper;
 
-import com.kte.backend.models.dto.request.RegisterRequest;
-import com.kte.backend.models.dto.request.UserRequest;
-import com.kte.backend.models.dto.response.UserResponse;
-import com.kte.backend.models.entity.User;
-import com.kte.backend.models.enums.UserRole;
+import com.kte.backend.user.dto.request.RegisterRequest;
+import com.kte.backend.user.dto.request.UserRequest;
+import com.kte.backend.user.dto.response.UserResponse;
+import com.kte.backend.user.User;
+import com.kte.backend.user.UserRole;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
