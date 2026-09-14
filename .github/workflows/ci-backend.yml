@@ -40,7 +40,10 @@ jobs:
       - name: Make Maven wrapper executable
         run: chmod +x mvnw
 
-      - name: Build and run unit + integration tests
+      # `mvn verify` runs unit + integration tests, then jacoco-maven-plugin's `check`
+      # goal (bound to the verify phase, see backend/pom.xml) fails the build if line
+      # coverage drops below the configured minimum (80%).
+      - name: Build, test and enforce coverage gate
         run: ./mvnw -B verify
 
       - name: Upload test reports
@@ -51,4 +54,12 @@ jobs:
           path: |
             backend/target/surefire-reports
             backend/target/failsafe-reports
+          if-no-files-found: warn
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: backend/target/site/jacoco
           if-no-files-found: warn
