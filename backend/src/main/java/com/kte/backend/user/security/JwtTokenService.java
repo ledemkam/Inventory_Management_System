@@ -3,6 +3,7 @@ package com.kte.backend.user.security;
 import com.kte.backend.exception.AuthenticationEntryPointException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
