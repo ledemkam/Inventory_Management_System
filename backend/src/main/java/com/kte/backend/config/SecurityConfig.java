@@ -70,6 +70,15 @@ public class SecurityConfig {
                             ).permitAll()
                             .anyRequest().authenticated()
                     )
+                    // CSRF protection defends against a browser automatically attaching ambient
+                    // credentials (session cookies) to a forged cross-site request. It is not
+                    // needed here: sessions are STATELESS (no JSESSIONID cookie is ever issued)
+                    // and authentication is derived solely from the "Authorization: Bearer <jwt>"
+                    // header (see JwtAuthenticationFilter), which a cross-site page cannot make
+                    // the victim's browser send. No endpoint in this app sets or reads an auth
+                    // cookie. CorsConfig also restricts allowed origins and disables credentialed
+                    // CORS requests. Sonar hotspot java:S4502 reviewed and accepted as Safe for
+                    // this reason; re-evaluate if JWT storage ever moves to a cookie.
                     .csrf(AbstractHttpConfigurer::disable)
                     .sessionManagement(session ->
                             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

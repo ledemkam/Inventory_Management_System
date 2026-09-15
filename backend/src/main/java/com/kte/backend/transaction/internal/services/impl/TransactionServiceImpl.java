@@ -18,6 +18,7 @@ import com.kte.backend.transaction.internal.factory.TransactionsFactory;
 import com.kte.backend.catalog.validator.ProductValidator;
 import com.kte.backend.transaction.internal.validator.TransactionValidator;
 import com.kte.backend.exception.EntityNotFoundException;
+import com.kte.backend.user.UserErrorMessages;
 import com.kte.backend.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -117,15 +118,14 @@ public class TransactionServiceImpl implements TransactionService {
 
         switch (transactionStatus) {
             case COMPLETED -> transactionsFactory.applyStockMovement(transaction);
-            case CANCELED -> {
-                if (current == TransactionStatus.COMPLETED) {
-                    transactionsFactory.reverseStockMovement(transaction);
-                }
-            }
-            case PENDING, PROCESSING -> {
-                if (current == TransactionStatus.COMPLETED) {
+            case TransactionStatus status when status == TransactionStatus.CANCELED
+                    && current == TransactionStatus.COMPLETED -> transactionsFactory.reverseStockMovement(transaction);
+            case TransactionStatus status when (status == TransactionStatus.PENDING || status == TransactionStatus.PROCESSING)
+                    && current == TransactionStatus.COMPLETED ->
                     throw new NameValueRequiredException("A completed transaction cannot be reopened");
-                }
+            case CANCELED, PENDING, PROCESSING -> {
+                // No stock movement to make: canceling a not-yet-completed transaction, or
+                // moving between PENDING and PROCESSING, never touched stock in the first place.
             }
         }
 
@@ -186,7 +186,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public PageResponse<TransactionResponse> findAllByUserId(final String userId, final Pageable pageable) {
         if (!userRepository.existsById(userId)) {
-            throw new EntityNotFoundException("User not found with id " + userId);
+            throw new EntityNotFoundException(UserErrorMessages.USER_NOT_FOUND_WITH_ID + userId);
         }
 
         log.debug("Fetching transactions for user with id: {}", userId);

@@ -1,5 +1,8 @@
 package com.kte.backend.common;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * Framework-neutral representation of an image being uploaded.
  * <p>
@@ -19,5 +22,39 @@ public record ImageUpload(byte[] content, String filename, String contentType) {
      */
     public boolean isEmpty() {
         return content == null || content.length == 0;
+    }
+
+    // A record's generated equals/hashCode/toString compare array-typed components
+    // by reference, not content, so two uploads carrying identical bytes would
+    // otherwise be considered different. Override all three to use Arrays.* on
+    // "content" instead.
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ImageUpload that)) {
+            return false;
+        }
+        return Arrays.equals(content, that.content)
+                && Objects.equals(filename, that.filename)
+                && Objects.equals(contentType, that.contentType);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * Objects.hash(filename, contentType) + Arrays.hashCode(content);
+    }
+
+    @Override
+    public String toString() {
+        // content.length (not Arrays.toString(content)) keeps this readable: an
+        // uploaded image is easily several MB, and printing every byte as a
+        // comma-separated decimal would flood logs without adding useful information.
+        return "ImageUpload[content=" + (content == null ? "null" : content.length + " bytes")
+                + ", filename=" + filename
+                + ", contentType=" + contentType
+                + ']';
     }
 }

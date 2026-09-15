@@ -42,7 +42,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Invalid credentials");
+        assertThat(response.getBody().getMessage()).isEqualTo("Invalid credentials");
     }
 
     @Test
@@ -53,7 +53,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Invalid credentials");
+        assertThat(response.getBody().getMessage()).isEqualTo("Invalid credentials");
     }
 
     @Test
@@ -64,7 +64,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Access denied");
+        assertThat(response.getBody().getMessage()).isEqualTo("Access denied");
     }
 
     @Test
@@ -75,7 +75,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Product already exists");
+        assertThat(response.getBody().getMessage()).isEqualTo("Product already exists");
     }
 
     @Test
@@ -86,7 +86,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Wrong password");
+        assertThat(response.getBody().getMessage()).isEqualTo("Wrong password");
     }
 
     @Test
@@ -97,7 +97,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Name is required");
+        assertThat(response.getBody().getMessage()).isEqualTo("Name is required");
     }
 
     @Test
@@ -108,7 +108,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Not allowed to edit this transaction");
+        assertThat(response.getBody().getMessage()).isEqualTo("Not allowed to edit this transaction");
     }
 
     @Test
@@ -119,7 +119,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("JWT token is expired");
+        assertThat(response.getBody().getMessage()).isEqualTo("JWT token is expired");
     }
 
     @Test
@@ -133,7 +133,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("name: must not be blank");
+        assertThat(response.getBody().getMessage()).isEqualTo("name: must not be blank");
     }
 
     @Test
@@ -146,7 +146,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Validation error occurred");
+        assertThat(response.getBody().getMessage()).isEqualTo("Validation error occurred");
     }
 
     private MethodParameter dummyMethodParameter() throws NoSuchMethodException {
@@ -173,7 +173,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("quantity: must be positive");
+        assertThat(response.getBody().getMessage()).isEqualTo("quantity: must be positive");
     }
 
     @Test
@@ -184,7 +184,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Constraint violation occurred");
+        assertThat(response.getBody().getMessage()).isEqualTo("Constraint violation occurred");
     }
 
     @Test
@@ -194,6 +194,6 @@ class GlobalExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("An unknown error occurred");
+        assertThat(response.getBody().getMessage()).isEqualTo("An unknown error occurred");
     }
 }

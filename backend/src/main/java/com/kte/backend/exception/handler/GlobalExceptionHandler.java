@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Error> handleAuthenticationException(Exception ex) {
         log.warn("Authentication failed: {}", ex.getMessage()); // log.warn, not log.error
         Error error = new Error();
-        error.setError("Invalid credentials"); // Generic message for security
+        error.setMessage("Invalid credentials"); // Generic message for security
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Error> handleAccessDenied(AccessDeniedException ex) {
         log.warn("Access denied: {}", ex.getMessage());
         Error error = new Error();
-        error.setError("Access denied");
+        error.setMessage("Access denied");
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
     ) {
         log.error("Caught EntityAlreadyExistsException", ex);
         Error error = new Error();
-        error.setError(ex.getMessage());
+        error.setMessage(ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
     ) {
         log.error("Caught InvalidCredentialsException", ex);
         Error error = new Error();
-        error.setError(ex.getMessage());
+        error.setMessage(ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
@@ -73,7 +73,7 @@ public class GlobalExceptionHandler {
     ) {
         log.error("Caught NameValueRequiredException", ex);
         Error error = new Error();
-        error.setError(ex.getMessage());
+        error.setMessage(ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
     ) {
         log.error("Caught AccessDenieException", ex);
         Error error = new Error();
-        error.setError(ex.getMessage());
+        error.setMessage(ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
@@ -93,7 +93,7 @@ public class GlobalExceptionHandler {
     ) {
         log.error("Caught AuthenticationEntryPointException", ex);
         Error error = new Error();
-        error.setError(ex.getMessage());
+        error.setMessage(ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
@@ -111,7 +111,7 @@ public class GlobalExceptionHandler {
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .orElse("Validation error occurred");
 
-        error.setError(errorMessage);
+        error.setMessage(errorMessage);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
@@ -129,7 +129,7 @@ public class GlobalExceptionHandler {
                         violation.getPropertyPath() + ": " + violation.getMessage()
                 ).orElse("Constraint violation occurred");
 
-        error.setError(errorMessage);
+        error.setMessage(errorMessage);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
@@ -137,7 +137,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Error> handleException(Exception ex) {
         log.error("Caught exception", ex);
         Error error = new Error();
-        error.setError("An unknown error occurred");
+        error.setMessage("An unknown error occurred");
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

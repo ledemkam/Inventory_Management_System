@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Error {
-    private String error;
+    private String message;
     private String path;           // ex: /api/v1/product/5
     private int status;            // ex: 404
     private LocalDateTime timestamp; // ex: 2026-05-02T14:32:10

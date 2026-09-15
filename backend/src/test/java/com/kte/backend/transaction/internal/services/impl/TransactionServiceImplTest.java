@@ -16,7 +16,7 @@ import com.kte.backend.catalog.Product;
 import com.kte.backend.catalog.Supplier;
 import com.kte.backend.catalog.validator.ProductValidator;
 import com.kte.backend.user.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
