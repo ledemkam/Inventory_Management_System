@@ -6,6 +6,7 @@ import com.kte.backend.user.internal.mapper.UserMapper;
 import com.kte.backend.user.internal.dto.request.UserRequest;
 import com.kte.backend.user.dto.response.UserResponse;
 import com.kte.backend.user.User;
+import com.kte.backend.user.UserErrorMessages;
 import com.kte.backend.user.repository.UserRepository;
 import com.kte.backend.user.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -45,15 +46,13 @@ public class UserServiceImpl implements UserService {
         final String userId = authentication.getName();
 
         log.debug("Fetching current logged-in user with id: {}", userId);
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + userId));
+        return findUserByIdOrThrow(userId);
     }
 
     @Override
     public UserResponse updateUser(final String id, final UserRequest userRequest) {
 
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+        User existingUser = findUserByIdOrThrow(id);
 
         // The controller's @PreAuthorize lets a user reach this method for their own account
         // even without ADMIN/MANAGER authority (self-service profile edits). Without this guard
@@ -83,12 +82,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(final String id) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+        User existingUser = findUserByIdOrThrow(id);
 
         log.info("User with id {} deleted successfully", id);
         userRepository.delete(existingUser);
     }
 
+    private User findUserByIdOrThrow(final String id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(UserErrorMessages.USER_NOT_FOUND_WITH_ID + id));
+    }
 
 }

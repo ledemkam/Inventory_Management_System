@@ -16,7 +16,7 @@ import com.kte.backend.catalog.Product;
 import com.kte.backend.catalog.Supplier;
 import com.kte.backend.catalog.validator.ProductValidator;
 import com.kte.backend.user.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -477,7 +477,7 @@ class TransactionServiceImplTest {
     }
 
     @Test
-    @DisplayName("Should throw when trying to reopen a completed transaction")
+    @DisplayName("Should throw when trying to reopen a completed transaction as pending")
     void should_Throw_When_Reopening_Completed_Transaction() {
         // Given
         final Transaction transaction = Transaction.builder()
@@ -493,6 +493,28 @@ class TransactionServiceImplTest {
         assertThrows(NameValueRequiredException.class,
                 () -> transactionService.updateTransactionStatus("t1", TransactionStatus.PENDING));
 
+        verifyNoInteractions(transactionsFactory);
+        verify(transactionRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should throw when trying to reopen a completed transaction as processing")
+    void should_Throw_When_Reopening_Completed_Transaction_As_Processing() {
+        // Given
+        final Transaction transaction = Transaction.builder()
+                .id("t1")
+                .status(TransactionStatus.COMPLETED)
+                .transactionType(TransactionType.SALE)
+                .totalProducts(5)
+                .build();
+
+        when(transactionValidator.findTransactionOrThrow("t1")).thenReturn(transaction);
+
+        // When / Then
+        assertThrows(NameValueRequiredException.class,
+                () -> transactionService.updateTransactionStatus("t1", TransactionStatus.PROCESSING));
+
+        verifyNoInteractions(transactionsFactory);
         verify(transactionRepository, never()).save(any());
     }
 

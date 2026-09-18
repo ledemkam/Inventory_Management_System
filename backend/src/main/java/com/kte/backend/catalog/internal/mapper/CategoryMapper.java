@@ -1,6 +1,6 @@
 package com.kte.backend.catalog.internal.mapper;
 
-import com.kte.backend.common.PageResponse;
+
 import com.kte.backend.catalog.internal.dto.request.CategoryRequest;
 import com.kte.backend.catalog.dto.response.CategoryResponse;
 import com.kte.backend.catalog.Category;

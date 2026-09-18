@@ -1,0 +1,5 @@
+# Force LF line endings for Flyway migrations regardless of core.autocrlf.
+# Flyway checksums the raw file bytes, so CRLF/LF differences between
+# environments (typically Windows with core.autocrlf=true) cause spurious
+# "Migration checksum mismatch" errors even when the content is unchanged.
+*.sql text eol=lf

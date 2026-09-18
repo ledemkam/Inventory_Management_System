@@ -1,6 +1,6 @@
 package com.kte.backend.catalog.validator;
 
-import com.kte.backend.exception.EntityAlreadyExistsException;
+
 import com.kte.backend.catalog.Category;
 import com.kte.backend.catalog.repository.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
