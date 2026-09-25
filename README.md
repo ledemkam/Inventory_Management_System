@@ -1,6 +1,6 @@
 # Inventory Management System — Backend API
 
-[![CI Backend](https://github.com/ledemkam/Inventory_Management_System/actions/workflows/ci-backend.yml/badge.svg)](https://github.com/ledemkam/Inventory_Management_System/actions/workflows/ci-backend.yml)
+[![CI/CD Backend](https://github.com/ledemkam/Inventory_Management_System/actions/workflows/ci-backend.yml/badge.svg)](https://github.com/ledemkam/Inventory_Management_System/actions/workflows/ci-backend.yml)
 ![Java 21](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot 4.1](https://img.shields.io/badge/Spring%20Boot-4.1-6DB33F)
 ![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-336791)
@@ -20,6 +20,7 @@ returns to suppliers) and user management with JWT authentication and roles.
 - [Running locally](#running-locally)
 - [Creating the first ADMIN account](#creating-the-first-admin-account)
 - [Testing and quality](#testing-and-quality)
+- [CI/CD pipeline](#cicd-pipeline)
 - [Deployment (Docker)](#deployment-docker)
 
 ---
@@ -51,7 +52,7 @@ returns to suppliers) and user management with JWT authentication and roles.
 | API documentation    | springdoc-openapi 3 (Swagger UI, `development` profile only)                                               |
 | Testing              | JUnit 5, Mockito, Spring Security Test, H2 (fast tests), **Testcontainers** PostgreSQL (integration tests) |
 | Quality              | JaCoCo (80% line coverage gate, build-breaking)                                                            |
-| CI                   | GitHub Actions (`mvn verify` on every push/PR)                                                             |
+| CI/CD                | GitHub Actions (tests + coverage gate, Docker image to GHCR, deploy to Render)                             |
 | Containers           | Docker (multi-stage build, JRE 21, non-root user), Docker Compose for development                          |
 
 ## Architecture
@@ -258,8 +259,30 @@ cd backend
 - **Coverage**: JaCoCo fails the build below 80% line coverage; report in
   `backend/target/site/jacoco/index.html`.
 
-GitHub Actions CI ([`ci-backend.yml`](.github/workflows/ci-backend.yml)) runs `mvn verify` on every push
-and pull request touching `backend/`, and publishes test and coverage reports.
+## CI/CD pipeline
+
+[`ci-backend.yml`](.github/workflows/ci-backend.yml) runs on every push and pull request touching
+`backend/`:
+
+```mermaid
+flowchart LR
+    A[build-and-test<br/>mvn verify + coverage gate] --> B[docker-image<br/>build Dockerfile]
+    B -->|main only| C[push to GHCR<br/>latest + sha-xxxxxxx]
+    C --> D[deploy-render<br/>deploy hook + health check]
+```
+
+| Job              | When            | What                                                                                                                      |
+|------------------|-----------------|---------------------------------------------------------------------------------------------------------------------------|
+| `build-and-test` | Every push / PR | Unit + integration tests, 80% coverage gate, test and coverage reports as artifacts                                       |
+| `docker-image`   | Every push / PR | Verifies the Dockerfile builds; on `main`, pushes `ghcr.io/ledemkam/inventory-backend` tagged `latest` and `sha-<commit>` |
+| `deploy-render`  | Push to `main`  | Triggers the Render deploy hook with the exact image digest, then waits for `/actuator/health/readiness`                  |
+
+Repository settings required for deployment (*Settings → Secrets and variables → Actions*):
+
+| Name                     | Type     | Value                                                                                                         |
+|--------------------------|----------|---------------------------------------------------------------------------------------------------------------|
+| `RENDER_DEPLOY_HOOK_URL` | Secret   | Deploy hook URL of the Render service                                                                         |
+| `RENDER_SERVICE_URL`     | Variable | Public URL of the service, e.g. `https://inventory-backend.onrender.com` (optional, enables the health check) |
 
 ## Deployment (Docker)
 
@@ -274,6 +297,17 @@ by default. To provide on the hosting platform: `DB_URL`, `DB_USERNAME`, `DB_PAS
 `CLOUDINARY_*` and `CORS_ALLOWED_ORIGINS`.
 
 Health checks for the orchestrator: `/actuator/health/liveness` and `/actuator/health/readiness`.
+
+### Render
+
+The API runs on Render as a web service deployed from the GHCR image:
+
+- **Service type**: Web Service → *Deploy an existing image* → `ghcr.io/ledemkam/inventory-backend:latest`.
+- **Health check path**: `/actuator/health/readiness`.
+- **Environment**: the variables listed above, plus `PORT=8080`.
+- **Database**: Render PostgreSQL. Render gives a `postgresql://user:password@host/db` URL; the app
+  expects the JDBC form in `DB_URL` (`jdbc:postgresql://host:5432/db`) with `DB_USERNAME` / `DB_PASSWORD`
+  set separately.
 
 ---
 
