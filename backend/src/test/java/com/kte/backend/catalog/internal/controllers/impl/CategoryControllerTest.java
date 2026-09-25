@@ -103,7 +103,7 @@ class CategoryControllerTest {
         //GIVEN
         when(jwtTokenService.validateToken(anyString())).thenReturn(true);
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
-        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("ADMIN");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("USER");
         //WHEN & THEN
         restTestClient.post().uri("/api/v1/categories")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
@@ -111,6 +111,25 @@ class CategoryControllerTest {
                 .body(categoryRequest)
                 .exchange()
                 .expectStatus().isForbidden();
+    }
+
+    @Test
+    @DisplayName("Should let ADMIN create a category through the role hierarchy (ADMIN > MANAGER)")
+    void should_Return_created_Category_When_Admin() {
+        //GIVEN
+        when(categoryService.create(categoryRequest)).thenReturn(categoryResponse);
+        when(jwtTokenService.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("ADMIN");
+        //WHEN & THEN
+        restTestClient.post().uri("/api/v1/categories")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(categoryRequest)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("1");
     }
 
     @Test
@@ -151,7 +170,7 @@ class CategoryControllerTest {
         // token validation so the filter grants the MANAGER authority the endpoint requires.
         when(jwtTokenService.validateToken(anyString())).thenReturn(true);
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
-        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("ADMIN");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("USER");
         //WHEN & THEN
         restTestClient.put().uri("/api/v1/categories/" + categoryId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
@@ -224,7 +243,7 @@ class CategoryControllerTest {
         String categoryId = "1";
         when(jwtTokenService.validateToken(anyString())).thenReturn(true);
         when(jwtTokenService.getUserIdFromTokEN(anyString())).thenReturn("1");
-        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("ADMIN");
+        when(jwtTokenService.getRoleFromToken(anyString())).thenReturn("USER");
         //WHEN & THEN
         restTestClient.delete().uri("/api/v1/categories/" + categoryId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer dummy-token")
