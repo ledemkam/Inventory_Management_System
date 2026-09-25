@@ -6,6 +6,8 @@ import com.kte.backend.user.security.JwtTokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 
@@ -31,6 +33,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 // proxy would only expose that interface, silently dropping all route mappings.
 @EnableMethodSecurity(proxyTargetClass = true)
 public class SecurityConfig {
+
+    // ADMIN inherits every MANAGER permission, and MANAGER every USER permission, so
+    // @PreAuthorize("hasRole('MANAGER')") also admits ADMIN without listing it on each endpoint.
+    // Static so method security picks it up before the rest of this configuration is created.
+    @Bean
+    static RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.fromHierarchy("""
+                ROLE_ADMIN > ROLE_MANAGER
+                ROLE_MANAGER > ROLE_USER
+                """);
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

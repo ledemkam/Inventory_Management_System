@@ -1,4 +1,10 @@
-name: CI Backend
+name: CI/CD Backend
+
+# Pipeline:
+#   build-and-test  ->  docker-image  ->  deploy-render
+#   (every push/PR)     (every push/PR:     (push to main only)
+#                        build + verify;
+#                        push to GHCR on main only)
 
 on:
   push:
@@ -16,7 +22,13 @@ permissions:
 
 concurrency:
   group: ci-backend-${{ github.ref }}
-  cancel-in-progress: true
+  # Never cancel a run on main midway: it may be pushing an image or deploying.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/inventory-backend
+  # Only a push (or manual run) on main publishes the image and deploys it.
+  IS_RELEASE: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
 
 jobs:
   build-and-test:
@@ -63,3 +75,94 @@ jobs:
           name: backend-coverage-report
           path: backend/target/site/jacoco
           if-no-files-found: warn
+
+  docker-image:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write   # push to GitHub Container Registry
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        if: env.IS_RELEASE == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Tags: `latest` and `sha-<short commit>` so every deployed image is traceable to a commit.
+      - name: Compute image tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha,format=short
+
+      # On PRs and feature branches this only verifies that the Dockerfile builds;
+      # on main it also publishes the image.
+      - name: Build (and push on main) the image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          push: ${{ env.IS_RELEASE == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-render:
+    needs: docker-image
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: ${{ vars.RENDER_SERVICE_URL }}
+
+    steps:
+      # Deploy the exact image just pushed (pinned by digest, not the moving `latest` tag).
+      - name: Trigger Render deploy
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          IMAGE: ${{ env.IMAGE_NAME }}@${{ needs.docker-image.outputs.digest }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "::error::Secret RENDER_DEPLOY_HOOK_URL is not set"
+            exit 1
+          fi
+          encoded_image=$(jq -rn --arg v "$IMAGE" '$v|@uri')
+          curl --fail --silent --show-error -X POST "${RENDER_DEPLOY_HOOK_URL}&imgURL=${encoded_image}"
+          echo "Deploy requested for $IMAGE"
+
+      # Render deploys asynchronously: wait until the service answers healthy again.
+      - name: Wait for the service to be healthy
+        if: vars.RENDER_SERVICE_URL != ''
+        env:
+          SERVICE_URL: ${{ vars.RENDER_SERVICE_URL }}
+        run: |
+          sleep 60
+          for i in $(seq 1 40); do
+            if curl --fail --silent "$SERVICE_URL/actuator/health/readiness"; then
+              echo
+              echo "Service is healthy"
+              exit 0
+            fi
+            echo "Not ready yet ($i/40), retrying in 15s..."
+            sleep 15
+          done
+          echo "::error::Service did not become healthy in time"
+          exit 1
