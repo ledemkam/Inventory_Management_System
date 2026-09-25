@@ -3,6 +3,7 @@ package com.kte.backend.exception.handler;
 import com.kte.backend.exception.AccessDenieException;
 import com.kte.backend.exception.AuthenticationEntryPointException;
 import com.kte.backend.exception.EntityAlreadyExistsException;
+import com.kte.backend.exception.EntityNotFoundException;
 import com.kte.backend.exception.Error;
 import com.kte.backend.exception.InvalidCredentialsException;
 import com.kte.backend.exception.NameValueRequiredException;
@@ -12,8 +13,11 @@ import jakarta.validation.Path;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpInputMessage;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,6 +25,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -185,6 +190,38 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getMessage()).isEqualTo("Constraint violation occurred");
+    }
+
+    @Test
+    @DisplayName("Should return 404 when an entity is not found")
+    void handleEntityNotFound() {
+        final ResponseEntity<Error> response =
+                handler.handleEntityNotFound(new EntityNotFoundException("Category not found"));
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getMessage()).isEqualTo("Category not found");
+    }
+
+    @Test
+    @DisplayName("Should return 400 for an unreadable request body")
+    void handleMalformedRequest() {
+        final ResponseEntity<Error> response = handler.handleMalformedRequest(
+                new HttpMessageNotReadableException("bad json", mock(HttpInputMessage.class)));
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getMessage()).isEqualTo("Malformed request");
+    }
+
+    @Test
+    @DisplayName("Should keep the 4xx status of Spring MVC exceptions such as an unknown route")
+    void handleException_SpringErrorResponse() {
+        final ResponseEntity<Error> response =
+                handler.handleException(new NoResourceFoundException(HttpMethod.GET, "/unknown", "unknown"));
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isNotNull();
     }
 
     @Test

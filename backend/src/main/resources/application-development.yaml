@@ -1,5 +1,5 @@
-# Local development overrides. Active by default (spring.profiles.active in application.yaml)
-# so `mvn spring-boot:run` / IDE runs work out of the box.
+# Local development overrides. Activated by `mvn spring-boot:run` (see pom.xml) or by setting
+# SPRING_PROFILES_ACTIVE=development in the IDE run configuration.
 # Real deployments MUST set SPRING_PROFILES_ACTIVE=production to avoid these
 # convenience-oriented, insecure-by-design settings.
 spring:
@@ -17,6 +17,11 @@ spring:
       ddl-auto: update
     show-sql: true
     open-in-view: true
+
+  # Lets Flyway adopt a local database that was created before migrations existed.
+  flyway:
+    baseline-on-migrate: true
+    clean-disabled: false
 
 # Dev-only fallback secret so local runs work without extra setup. NEVER used in production.
 jwt:

@@ -3,19 +3,23 @@ package com.kte.backend.exception.handler;
 import com.kte.backend.exception.AccessDenieException;
 import com.kte.backend.exception.AuthenticationEntryPointException;
 import com.kte.backend.exception.EntityAlreadyExistsException;
+import com.kte.backend.exception.EntityNotFoundException;
 import com.kte.backend.exception.Error;
 import com.kte.backend.exception.InvalidCredentialsException;
 import com.kte.backend.exception.NameValueRequiredException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -133,8 +137,32 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Error> handleEntityNotFound(EntityNotFoundException ex) {
+        log.warn("Entity not found: {}", ex.getMessage());
+        Error error = new Error();
+        error.setMessage(ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class, TypeMismatchException.class})
+    public ResponseEntity<Error> handleMalformedRequest(Exception ex) {
+        log.warn("Malformed request: {}", ex.getMessage());
+        Error error = new Error();
+        error.setMessage("Malformed request");
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Error> handleException(Exception ex) {
+        // Spring MVC's own exceptions (unknown route, unsupported method/media type, missing
+        // parameter, ...) carry their 4xx status; keep it instead of reporting a server error.
+        if (ex instanceof ErrorResponse errorResponse) {
+            log.warn("Request rejected: {}", ex.getMessage());
+            Error error = new Error();
+            error.setMessage(errorResponse.getBody().getDetail());
+            return new ResponseEntity<>(error, errorResponse.getStatusCode());
+        }
         log.error("Caught exception", ex);
         Error error = new Error();
         error.setMessage("An unknown error occurred");

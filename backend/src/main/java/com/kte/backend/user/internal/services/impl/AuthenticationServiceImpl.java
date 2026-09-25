@@ -69,9 +69,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         final User user = userMapper.dtoToEntity(registerRequest);
-        // USER is the safe default for self-registration when no role is explicitly requested;
-        // ADMIN/MANAGER remain assignable via an explicit role in the request.
-        user.setRole(registerRequest.role() != null ? registerRequest.role() : UserRole.USER);
+        // Self-registration is public, so it must never grant elevated privileges:
+        // every new account starts as USER; ADMIN/MANAGER are granted afterwards by an admin.
+        user.setRole(UserRole.USER);
         user.setPassword(passwordEncoder.encode(registerRequest.password()));
         final User savedUser = userRepository.save(user);
 

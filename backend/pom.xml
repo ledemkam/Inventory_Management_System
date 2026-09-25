@@ -83,7 +83,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>runtime</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -106,7 +106,8 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.6.0</version>
+            <!-- springdoc 3.x is the line built for Spring Boot 4 / Spring Framework 7 -->
+            <version>3.0.2</version>
         </dependency>
         <!-- Cloudinary - image storage -->
         <dependency>
@@ -192,7 +193,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
-            <version>4.0.0</version>
             <scope>test</scope>
         </dependency>
         <!-- RestTestClient auto-configuration (@AutoConfigureRestTestClient) -->
@@ -260,6 +260,12 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- Only affects `mvn spring-boot:run`; the packaged jar has no default profile. -->
+                    <profiles>
+                        <profile>development</profile>
+                    </profiles>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>

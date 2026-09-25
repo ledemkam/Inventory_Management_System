@@ -52,7 +52,6 @@ class AuthenticationControllerTest {
                 .email("john.doe@example.com")
                 .password("Password123!")
                 .phoneNumber("+237600000000")
-                .role(UserRole.MANAGER)
                 .build();
 
         final UserResponse expectedResponse = UserResponse.builder()
@@ -60,7 +59,7 @@ class AuthenticationControllerTest {
                 .username(registerRequest.username())
                 .email(registerRequest.email())
                 .phoneNumber(registerRequest.phoneNumber())
-                .role(registerRequest.role())
+                .role(UserRole.USER)
                 .createdAt(LocalDateTime.now())
                 .build();
 

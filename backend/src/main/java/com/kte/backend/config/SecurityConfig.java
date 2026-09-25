@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -79,6 +80,9 @@ public class SecurityConfig {
                     // cookie. CorsConfig also restricts allowed origins and disables credentialed
                     // CORS requests. Sonar hotspot java:S4502 reviewed and accepted as Safe for
                     // this reason; re-evaluate if JWT storage ever moves to a cookie.
+                    // Apply CorsConfig inside the security chain, otherwise browser preflight
+                    // (OPTIONS) requests are rejected with 401 before reaching Spring MVC.
+                    .cors(Customizer.withDefaults())
                     .csrf(AbstractHttpConfigurer::disable)
                     .sessionManagement(session ->
                             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

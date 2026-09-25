@@ -50,7 +50,6 @@ class UserMapperTest {
                 .email("john.doe@example.com")
                 .password("secret")
                 .phoneNumber("0600000000")
-                .role(UserRole.ADMIN)
                 .build();
 
         //When
