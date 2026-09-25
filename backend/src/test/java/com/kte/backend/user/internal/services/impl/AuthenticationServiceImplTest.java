@@ -107,7 +107,6 @@ class AuthenticationServiceImplTest {
                 .email("johndoe@example.com")
                 .password("plainPassword")
                 .phoneNumber("1234567890")
-                .role(UserRole.MANAGER)
                 .build();
 
         final User userToSave = User.builder().username("johndoe").build();
@@ -117,7 +116,7 @@ class AuthenticationServiceImplTest {
                 .username("johndoe")
                 .email("johndoe@example.com")
                 .phoneNumber("1234567890")
-                .role(UserRole.MANAGER)
+                .role(UserRole.USER)
                 .build();
 
         when(userRepository.existsByUsername(registerRequest.username())).thenReturn(false);
@@ -138,8 +137,8 @@ class AuthenticationServiceImplTest {
     }
 
     @Test
-    @DisplayName("Should default to USER role when registering without an explicit role")
-    void should_register_user_with_default_USER_role_when_role_not_provided() {
+    @DisplayName("Should always assign the USER role on self-registration")
+    void should_always_register_user_with_USER_role() {
         final RegisterRequest registerRequest = RegisterRequest.builder()
                 .username("johndoe")
                 .email("johndoe@example.com")
@@ -179,7 +178,6 @@ class AuthenticationServiceImplTest {
                 .email("johndoe@example.com")
                 .password("plainPassword")
                 .phoneNumber("1234567890")
-                .role(UserRole.MANAGER)
                 .build();
 
         when(userRepository.existsByUsername(registerRequest.username())).thenReturn(true);
