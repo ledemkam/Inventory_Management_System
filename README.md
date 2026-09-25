@@ -4,14 +4,28 @@
 ![Java 21](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot 4.1](https://img.shields.io/badge/Spring%20Boot-4.1-6DB33F)
 ![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-336791)
+[![Deployed on Render](https://img.shields.io/badge/deployed%20on-Render-46E3B7)](https://inventory-backend-latest-wmey.onrender.com/actuator/health)
 
 REST API for inventory management: product catalog (categories, products, suppliers), stock movements (purchases, sales,
 returns to suppliers) and user management with JWT authentication and roles.
+
+## Live API
+
+|                 | URL                                                                  |
+|-----------------|----------------------------------------------------------------------|
+| Base URL        | <https://inventory-backend-latest-wmey.onrender.com/api/v1>          |
+| Health check    | <https://inventory-backend-latest-wmey.onrender.com/actuator/health> |
+| Try it (public) | <https://inventory-backend-latest-wmey.onrender.com/api/v1/products> |
+
+> Hosted on Render's free tier: the service sleeps after a period of inactivity, so the first request
+> can take up to a minute while it wakes up. Swagger UI is disabled in production; see
+> [API endpoints](#api-endpoints) and run the project locally for interactive documentation.
 
 ---
 
 ## Table of contents
 
+- [Live API](#live-api)
 - [Features](#features)
 - [Tech stack](#tech-stack)
 - [Architecture](#architecture)
@@ -279,10 +293,10 @@ flowchart LR
 
 Repository settings required for deployment (*Settings → Secrets and variables → Actions*):
 
-| Name                     | Type     | Value                                                                                                         |
-|--------------------------|----------|---------------------------------------------------------------------------------------------------------------|
-| `RENDER_DEPLOY_HOOK_URL` | Secret   | Deploy hook URL of the Render service                                                                         |
-| `RENDER_SERVICE_URL`     | Variable | Public URL of the service, e.g. `https://inventory-backend.onrender.com` (optional, enables the health check) |
+| Name                     | Type     | Value                                                                                                                     |
+|--------------------------|----------|---------------------------------------------------------------------------------------------------------------------------|
+| `RENDER_DEPLOY_HOOK_URL` | Secret   | Deploy hook URL of the Render service                                                                                     |
+| `RENDER_SERVICE_URL`     | Variable | Public URL of the service, e.g. `https://inventory-backend-latest-wmey.onrender.com` (optional, enables the health check) |
 
 ## Deployment (Docker)
 

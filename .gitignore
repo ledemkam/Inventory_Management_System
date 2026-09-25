@@ -1,0 +1,12 @@
+# IntelliJ IDEA - per-developer settings (run configs, data sources with DB hosts, ...)
+.idea/
+*.iml
+
+# Local environment files (secrets)
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
